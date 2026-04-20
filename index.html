@@ -3,247 +3,331 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#f5f3ef">
+<meta name="theme-color" content="#0a0a0f">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Vijay Daily">
-<title>Vijay — Daily Tracker</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Instrument+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Vijay OS">
+<title>Vijay — Daily OS</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Instrument+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:#f5f3ef; --bg2:#edeae3; --white:#ffffff;
-  --ink:#1a1a1a; --ink2:#3a3a3a; --muted:#8a8a8a;
-  --light:#c8c4bb; --border:#e0dcd4;
-  --health:#2d5a27; --wellness:#1a3a5c; --tasks:#3a1a2e;
-  --gold:#b8943f; --danger:#c0392b;
-  --nav-h:64px; --safe-b:env(safe-area-inset-bottom,0px);
-  --radius:14px; --shadow:0 1px 4px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.04);
+  --bg:#0a0a0f; --surface:#12121a; --surface2:#1a1a26; --border:#2a2a3a;
+  --text:#e8e8f0; --muted:#6a6a80; --faint:#3a3a50;
+  --jupiter:#f0c040; --jupiter-bg:rgba(240,192,64,.1);
+  --mars:#e84040;    --mars-bg:rgba(232,64,64,.1);
+  --venus:#e870c0;   --venus-bg:rgba(232,112,192,.1);
+  --mercury:#40c8e8; --mercury-bg:rgba(64,200,232,.1);
+  --saturn:#8888a8;  --saturn-bg:rgba(136,136,168,.1);
+  --sun:#f8a830;     --sun-bg:rgba(248,168,48,.1);
+  --moon:#c8c8e8;    --moon-bg:rgba(200,200,232,.1);
+  --green:#40d880; --red:#e84040; --gold:#f0c040;
+  --health:#40d880; --wellness:#40c8e8; --tasks:#e870c0;
+  --nav-h:60px; --safe-b:env(safe-area-inset-bottom,0px);
+  --radius:12px;
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'Instrument Sans',sans-serif;-webkit-font-smoothing:antialiased;color:var(--ink)}
+html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'Instrument Sans',sans-serif;-webkit-font-smoothing:antialiased;color:var(--text)}
 
 .app{display:flex;flex-direction:column;height:100dvh;height:100vh}
 
-/* TOPBAR */
-.topbar{flex-shrink:0;display:flex;justify-content:space-between;align-items:center;padding:.9rem 1.2rem .7rem;padding-top:calc(.9rem + env(safe-area-inset-top,0px));background:var(--bg);border-bottom:1px solid var(--border);z-index:10}
-.brand{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:600;letter-spacing:-.01em}
-.brand span{color:var(--gold)}
+/* ── TOPBAR ── */
+.topbar{flex-shrink:0;display:flex;justify-content:space-between;align-items:center;
+  padding:.9rem 1.1rem .7rem;padding-top:calc(.9rem + env(safe-area-inset-top,0px));
+  background:var(--surface);border-bottom:1px solid var(--border);z-index:10}
+.brand{font-family:'Space Mono',monospace;font-size:.95rem;font-weight:700;letter-spacing:.1em;color:var(--gold)}
 .topbar-right{display:flex;align-items:center;gap:.5rem}
-.topbar-date{font-size:.62rem;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
-.sync-dot{width:8px;height:8px;border-radius:50%;background:var(--light);flex-shrink:0;transition:background .3s}
-.sync-dot.synced{background:#2d5a27}
-.sync-dot.syncing{background:var(--gold);animation:pulse .8s infinite}
-.sync-dot.error{background:var(--danger)}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-.icon-btn{width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.9rem;color:var(--ink2);transition:all .15s;box-shadow:var(--shadow)}
-.icon-btn:active{transform:scale(.92)}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--faint);transition:background .3s}
+.sync-dot.synced{background:var(--green)} .sync-dot.syncing{background:var(--gold);animation:pulse .8s infinite} .sync-dot.error{background:var(--red)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.icon-btn{background:var(--surface2);border:1px solid var(--border);color:var(--muted);width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.85rem;transition:all .15s}
+.icon-btn:active{opacity:.7}
 
-/* SCORE STRIP */
-.score-strip{flex-shrink:0;display:flex;align-items:center;gap:.75rem;padding:.75rem 1.2rem;background:var(--white);border-bottom:1px solid var(--border)}
-.ring-wrap{position:relative;width:56px;height:56px;flex-shrink:0}
-.ring-wrap svg{transform:rotate(-90deg);width:56px;height:56px}
-.ring-bg{fill:none;stroke:var(--border);stroke-width:5}
-.ring-fill{fill:none;stroke:var(--ink);stroke-width:5;stroke-linecap:round;stroke-dasharray:138;stroke-dashoffset:138;transition:stroke-dashoffset .7s cubic-bezier(.4,0,.2,1)}
+/* ── DATE NAV ── */
+.date-nav{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;
+  padding:.6rem 1.1rem;background:var(--surface);border-bottom:1px solid var(--border)}
+.dnav-btn{background:var(--surface2);border:1px solid var(--border);color:var(--muted);
+  width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:.9rem;transition:all .15s}
+.dnav-btn:active{opacity:.7} .dnav-btn:disabled{opacity:.25;cursor:not-allowed}
+.date-center{text-align:center;flex:1;padding:0 .75rem}
+.date-main{font-family:'Space Mono',monospace;font-size:.85rem;font-weight:700;color:var(--text)}
+.date-sub{font-size:.6rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-top:.1rem}
+.date-badge{display:inline-block;font-size:.55rem;font-weight:700;letter-spacing:.06em;
+  padding:.15rem .5rem;border-radius:3px;margin-top:.2rem}
+.badge-today{background:var(--gold);color:#000}
+.badge-past{background:var(--surface2);color:var(--muted);border:1px solid var(--border)}
+.badge-locked{background:rgba(232,64,64,.15);color:var(--red)}
+
+/* ── SCORE STRIP ── */
+.score-strip{flex-shrink:0;display:flex;align-items:center;gap:.75rem;
+  padding:.65rem 1.1rem;background:var(--surface);border-bottom:1px solid var(--border)}
+.ring-wrap{position:relative;width:52px;height:52px;flex-shrink:0}
+.ring-wrap svg{transform:rotate(-90deg);width:52px;height:52px}
+.ring-bg{fill:none;stroke:var(--surface2);stroke-width:5}
+.ring-fill{fill:none;stroke-width:5;stroke-linecap:round;stroke-dasharray:132;stroke-dashoffset:132;transition:stroke-dashoffset .7s cubic-bezier(.4,0,.2,1)}
 .ring-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.ring-pct{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:600;line-height:1}
-.ring-lbl{font-size:.45rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.ring-pct{font-family:'Space Mono',monospace;font-size:.85rem;font-weight:700;line-height:1}
+.ring-lbl{font-size:.42rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
 .score-info{flex:1;min-width:0}
-.score-grade{font-family:'Playfair Display',serif;font-size:1rem;font-weight:500;margin-bottom:.2rem}
-.score-sub{font-size:.68rem;color:var(--muted);line-height:1.4}
-.cat-bars{display:flex;flex-direction:column;gap:.3rem;min-width:90px}
-.cat-bar-row{display:flex;align-items:center;gap:.4rem}
-.cat-bar-label{font-size:.55rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;width:12px}
-.cat-bar-track{flex:1;height:3px;background:var(--bg2);border-radius:2px;overflow:hidden}
-.cat-bar-fill{height:100%;border-radius:2px;transition:width .5s}
-.cat-bar-val{font-size:.55rem;color:var(--muted);width:22px;text-align:right}
+.score-grade{font-size:.9rem;font-weight:600;margin-bottom:.15rem}
+.score-sub{font-size:.62rem;color:var(--muted);line-height:1.4}
+.cat-bars{display:flex;flex-direction:column;gap:.28rem;min-width:86px}
+.cbr{display:flex;align-items:center;gap:.35rem}
+.cbr-lbl{font-size:.5rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;width:11px}
+.cbr-track{flex:1;height:3px;background:var(--surface2);border-radius:2px;overflow:hidden}
+.cbr-fill{height:100%;border-radius:2px;transition:width .5s}
+.cbr-val{font-size:.5rem;color:var(--muted);width:18px;text-align:right;font-family:'Space Mono',monospace}
 
-/* SCROLL */
+/* ── SCROLL ── */
 .scroll-area{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
 
-/* SECTIONS */
-.section{display:none;padding:1.2rem;padding-bottom:calc(var(--nav-h) + var(--safe-b) + 1.5rem)}
+/* ── SECTIONS ── */
+.section{display:none;padding:1rem;padding-bottom:calc(var(--nav-h) + var(--safe-b) + 1.5rem)}
 .section.active{display:block;animation:fadeIn .2s ease}
 @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 
-/* CATEGORY */
-.cat-block{margin-bottom:1.6rem}
-.cat-head{display:flex;align-items:center;gap:.6rem;margin-bottom:.85rem}
-.cat-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
-.cat-title{font-family:'Playfair Display',serif;font-size:1rem;font-weight:500}
-.cat-pts{margin-left:auto;font-size:.65rem;color:var(--muted)}
-.habits-row{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+/* ── PLANET SECTION HEADER ── */
+.p-header{display:flex;align-items:center;gap:.6rem;padding:.5rem .75rem;border-radius:8px;margin-bottom:.55rem;font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
 
-/* HABIT CARD */
-.habit-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:.95rem 1rem;cursor:pointer;transition:transform .15s,border-color .2s;box-shadow:var(--shadow);user-select:none;position:relative;overflow:hidden}
-.habit-card:active{transform:scale(.96)}
-.habit-card.done{border-color:currentColor;background:color-mix(in srgb,currentColor 6%,white)}
-.hc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.6rem}
-.hc-icon{font-size:1.3rem}
-.hc-check{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--light);display:flex;align-items:center;justify-content:center;font-size:.6rem;color:transparent;transition:all .2s}
-.habit-card.done .hc-check{background:currentColor;border-color:currentColor;color:white}
-.hc-name{font-size:.78rem;font-weight:600;margin-bottom:.1rem}
-.hc-pts{font-size:.6rem;color:var(--muted)}
-.habit-card.done .hc-pts{opacity:.7}
+/* ── HABIT CARD ── */
+.habit-card{display:flex;align-items:center;gap:.7rem;padding:.75rem .85rem;
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  margin-bottom:.5rem;cursor:pointer;transition:all .15s;user-select:none}
+.habit-card:active{transform:scale(.98);opacity:.85}
+.habit-card.done{border-color:rgba(64,216,128,.3);background:rgba(64,216,128,.04)}
+.habit-card.locked{opacity:.5;cursor:not-allowed}
+.hc-check{width:22px;height:22px;border-radius:6px;border:1.5px solid var(--border);
+  display:flex;align-items:center;justify-content:center;font-size:.7rem;color:transparent;
+  flex-shrink:0;transition:all .2s}
+.habit-card.done .hc-check{background:var(--green);border-color:var(--green);color:#000}
+.hc-info{flex:1;min-width:0}
+.hc-name{font-size:.8rem;font-weight:600;color:var(--text)}
+.hc-meta{font-size:.6rem;color:var(--muted);margin-top:.1rem;line-height:1.35}
+.hc-month{text-align:center;flex-shrink:0;min-width:36px}
+.hc-month-num{font-family:'Space Mono',monospace;font-size:1rem;font-weight:700;line-height:1}
+.hc-month-lbl{font-size:.5rem;color:var(--muted);letter-spacing:.05em;margin-top:.1rem}
 
-/* TASKS */
-.tasks-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
-.tasks-head{padding:.9rem 1rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
-.tasks-head-title{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:500}
-.tasks-meta{font-size:.65rem;color:var(--muted)}
-.task-add-wrap{padding:.75rem 1rem;border-bottom:1px solid var(--border)}
-.task-add-row{display:flex;gap:.5rem;margin-bottom:.5rem}
-.task-inp{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.6rem .85rem;font-family:'Instrument Sans',sans-serif;font-size:.85rem;color:var(--ink);outline:none;transition:border-color .2s;-webkit-appearance:none}
-.task-inp:focus{border-color:var(--ink)}
-.task-inp::placeholder{color:var(--light)}
-.task-add-btn{padding:.6rem 1rem;background:var(--ink);color:var(--white);border:none;border-radius:8px;font-family:'Instrument Sans',sans-serif;font-size:.78rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:opacity .15s}
-.task-add-btn:active{opacity:.75}
-.task-cats{display:flex;gap:.4rem}
-.cat-chip{padding:.3rem .75rem;border:1px solid var(--border);border-radius:100px;font-size:.68rem;font-weight:500;background:var(--bg);color:var(--muted);cursor:pointer;transition:all .15s}
-.cat-chip.active{background:var(--ink);color:var(--white);border-color:var(--ink)}
-.task-list{}
-.task-item{display:flex;align-items:center;gap:.75rem;padding:.75rem 1rem;border-bottom:1px solid var(--border);transition:background .15s}
+/* ── CAT BLOCK ── */
+.cat-block{margin-bottom:1.4rem}
+.cat-head{display:flex;align-items:center;gap:.5rem;margin-bottom:.7rem}
+.cat-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.cat-title{font-family:'Space Mono',monospace;font-size:.72rem;font-weight:700;letter-spacing:.06em}
+.cat-pts{margin-left:auto;font-size:.6rem;color:var(--muted)}
+.habits-row{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+
+/* ── PERSONAL HABIT CARD (grid style) ── */
+.p-habit-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:.8rem .85rem;cursor:pointer;transition:all .15s;user-select:none;position:relative;overflow:hidden}
+.p-habit-card:active{transform:scale(.96)}
+.p-habit-card.done{border-color:currentColor;background:color-mix(in srgb,currentColor 8%,#12121a)}
+.phc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem}
+.phc-icon{font-size:1.2rem}
+.phc-check{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--border);
+  display:flex;align-items:center;justify-content:center;font-size:.55rem;color:transparent;transition:all .2s}
+.p-habit-card.done .phc-check{background:currentColor;border-color:currentColor;color:#000}
+.phc-name{font-size:.75rem;font-weight:600;margin-bottom:.1rem}
+.phc-pts{font-size:.58rem;color:var(--muted)}
+.phc-month{position:absolute;bottom:.6rem;right:.7rem;font-family:'Space Mono',monospace;font-size:.7rem;font-weight:700;color:var(--muted);opacity:.6}
+
+/* ── TASKS ── */
+.tasks-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.tasks-head{padding:.75rem .9rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.tasks-head-title{font-family:'Space Mono',monospace;font-size:.72rem;font-weight:700;letter-spacing:.05em}
+.tasks-meta{font-size:.6rem;color:var(--muted)}
+.task-add-wrap{padding:.65rem .9rem;border-bottom:1px solid var(--border)}
+.task-add-row{display:flex;gap:.45rem;margin-bottom:.45rem}
+.task-inp{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:7px;
+  padding:.5rem .75rem;font-family:'Instrument Sans',sans-serif;font-size:.8rem;color:var(--text);outline:none;transition:border-color .2s;-webkit-appearance:none}
+.task-inp:focus{border-color:var(--gold)} .task-inp::placeholder{color:var(--faint)}
+.task-add-btn{padding:.5rem .85rem;background:var(--gold);color:#000;border:none;border-radius:7px;
+  font-family:'Space Mono',monospace;font-size:.65rem;font-weight:700;cursor:pointer;white-space:nowrap}
+.task-add-btn:active{opacity:.8}
+.task-cats{display:flex;gap:.35rem}
+.cat-chip{padding:.25rem .6rem;border:1px solid var(--border);border-radius:100px;font-size:.62rem;font-weight:500;background:none;color:var(--muted);cursor:pointer;transition:all .15s}
+.cat-chip.active{background:var(--gold);color:#000;border-color:var(--gold)}
+.task-item{display:flex;align-items:center;gap:.65rem;padding:.65rem .9rem;border-bottom:1px solid var(--border);transition:background .15s}
 .task-item:last-child{border-bottom:none}
-.task-item.done .task-text{text-decoration:line-through;color:var(--light)}
-.task-cb{width:20px;height:20px;border-radius:5px;border:1.5px solid var(--light);background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.65rem;color:transparent;flex-shrink:0;transition:all .2s}
-.task-item.done .task-cb{background:var(--ink);border-color:var(--ink);color:white}
-.task-text{flex:1;font-size:.82rem;color:var(--ink2);line-height:1.35}
-.task-tag{font-size:.58rem;padding:.15rem .45rem;border-radius:100px;font-weight:600;letter-spacing:.04em;flex-shrink:0}
-.tag-work{background:#e8f0ff;color:#2a4a8f}
-.tag-learn{background:#f0e8ff;color:#5a2a8f}
-.tag-other{background:var(--bg2);color:var(--muted)}
-.task-del{background:none;border:none;color:var(--light);cursor:pointer;font-size:.85rem;padding:.3rem;transition:color .15s;flex-shrink:0}
-.task-del:active{color:var(--danger)}
-.no-tasks{padding:2rem;text-align:center;color:var(--muted);font-size:.8rem}
+.task-item.done .task-text{text-decoration:line-through;color:var(--muted)}
+.task-cb{width:18px;height:18px;border-radius:4px;border:1.5px solid var(--border);background:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:.6rem;color:transparent;flex-shrink:0;transition:all .2s}
+.task-item.done .task-cb{background:var(--green);border-color:var(--green);color:#000}
+.task-text{flex:1;font-size:.78rem;color:var(--text);line-height:1.35}
+.task-tag{font-size:.55rem;padding:.12rem .4rem;border-radius:100px;font-weight:600;flex-shrink:0}
+.tag-work{background:rgba(64,200,232,.15);color:var(--mercury)} .tag-learn{background:rgba(232,112,192,.15);color:var(--venus)} .tag-other{background:var(--surface2);color:var(--muted)}
+.task-del{background:none;border:none;color:var(--faint);cursor:pointer;font-size:.8rem;padding:.2rem;transition:color .15s;flex-shrink:0}
+.task-del:active{color:var(--red)}
+.no-tasks{padding:1.5rem;text-align:center;color:var(--muted);font-size:.75rem}
 
-/* WEEK/MONTH */
-.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:1rem}
-.stat-box{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:.9rem .8rem;box-shadow:var(--shadow);text-align:center}
-.stat-val{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:500;line-height:1}
-.stat-lbl{font-size:.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-top:.2rem}
-.report-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:1rem}
-.rc-title{padding:.8rem 1rem;border-bottom:1px solid var(--border);font-family:'Playfair Display',serif;font-size:.9rem;font-weight:500}
-.rc-body{padding:.8rem 1rem}
-.rt-row{display:flex;align-items:center;gap:.75rem;padding:.45rem 0;border-bottom:1px solid var(--border)}
+/* ── PLANET TRACKER ── */
+.planet-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;margin-bottom:.75rem}
+.pc-header{display:flex;align-items:center;gap:.6rem;margin-bottom:.6rem}
+.pc-symbol{font-size:1.1rem;font-family:'Space Mono',monospace;font-weight:700}
+.pc-title{font-size:.82rem;font-weight:600}
+.pc-sub{font-size:.62rem;color:var(--muted);margin-bottom:.65rem;line-height:1.4}
+.planet-opts{display:flex;flex-wrap:wrap;gap:.4rem}
+.p-opt{padding:.3rem .7rem;border-radius:6px;border:1px solid var(--border);background:none;
+  color:var(--muted);font-family:'Instrument Sans',sans-serif;font-size:.65rem;cursor:pointer;transition:all .15s;text-align:left}
+.p-opt:active{opacity:.7}
+.p-opt.selected{font-weight:600;color:var(--text);border-color:currentColor}
+
+/* ── JOURNAL ── */
+.journal-block{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:.9rem;margin-bottom:.75rem}
+.jb-label{font-size:.65rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--gold);margin-bottom:.2rem}
+.jb-hint{font-size:.6rem;color:var(--muted);margin-bottom:.55rem;line-height:1.4;font-style:italic}
+.jb-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:7px;
+  padding:.55rem .75rem;color:var(--text);font-family:'Instrument Sans',sans-serif;font-size:.8rem;
+  resize:none;outline:none;transition:border-color .2s;-webkit-appearance:none}
+.jb-input:focus{border-color:var(--gold)} .jb-input::placeholder{color:var(--faint)}
+.planet-lead-opts{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.3rem}
+
+/* ── WEEK/MONTH ── */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-bottom:.9rem}
+.stat-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:.8rem .7rem;text-align:center}
+.stat-val{font-family:'Space Mono',monospace;font-size:1.4rem;font-weight:700;line-height:1}
+.stat-lbl{font-size:.55rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-top:.2rem}
+.report-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:.9rem}
+.rc-title{padding:.65rem .9rem;border-bottom:1px solid var(--border);font-family:'Space Mono',monospace;font-size:.72rem;font-weight:700;letter-spacing:.05em}
+.rc-body{padding:.75rem .9rem}
+.rt-row{display:flex;align-items:center;gap:.65rem;padding:.38rem 0;border-bottom:1px solid var(--border)}
 .rt-row:last-child{border-bottom:none}
-.rt-day{font-size:.78rem;font-weight:600;width:34px;flex-shrink:0}
-.rt-bar-track{flex:1;height:5px;background:var(--bg2);border-radius:3px;overflow:hidden}
+.rt-day{font-size:.72rem;font-weight:700;width:30px;flex-shrink:0;font-family:'Space Mono',monospace}
+.rt-bar-track{flex:1;height:5px;background:var(--surface2);border-radius:3px;overflow:hidden}
 .rt-bar-fill{height:100%;border-radius:3px;transition:width .5s}
-.rt-pct{font-size:.72rem;color:var(--muted);width:34px;text-align:right}
-.con-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;box-shadow:var(--shadow)}
-.con-title{font-family:'Playfair Display',serif;font-size:.9rem;font-weight:500;margin-bottom:.9rem}
-.con-row{display:flex;align-items:center;gap:.6rem;margin-bottom:.6rem}
+.rt-pct{font-size:.65rem;color:var(--muted);width:30px;text-align:right;font-family:'Space Mono',monospace}
+.con-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:.9rem}
+.con-title{font-family:'Space Mono',monospace;font-size:.72rem;font-weight:700;letter-spacing:.05em;margin-bottom:.8rem}
+.con-row{display:flex;align-items:center;gap:.55rem;margin-bottom:.55rem}
 .con-row:last-child{margin-bottom:0}
-.con-icon{font-size:.9rem;width:20px;text-align:center}
-.con-name{font-size:.72rem;width:100px;flex-shrink:0;color:var(--ink2)}
-.con-track{flex:1;height:3px;background:var(--bg2);border-radius:2px;overflow:hidden}
+.con-icon{font-size:.85rem;width:18px;text-align:center}
+.con-name{font-size:.68rem;width:90px;flex-shrink:0;color:var(--muted)}
+.con-track{flex:1;height:3px;background:var(--surface2);border-radius:2px;overflow:hidden}
 .con-fill{height:100%;border-radius:2px;transition:width .5s}
-.con-pct{font-size:.65rem;color:var(--muted);width:30px;text-align:right}
+.con-pct{font-size:.62rem;color:var(--muted);width:28px;text-align:right;font-family:'Space Mono',monospace}
 
-/* MONTH */
-.month-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
-.mnav-btn{padding:.45rem 1rem;background:var(--white);border:1px solid var(--border);border-radius:100px;font-family:'Instrument Sans',sans-serif;font-size:.72rem;font-weight:500;color:var(--ink2);cursor:pointer}
-.mnav-btn:active{background:var(--bg2)}
-.mnav-title{font-family:'Playfair Display',serif;font-size:1rem;font-weight:500}
-.cal-wrap{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;box-shadow:var(--shadow);margin-bottom:1rem}
-.cal-days-hdr{display:grid;grid-template-columns:repeat(7,1fr);gap:.2rem;margin-bottom:.4rem}
-.cal-dh{text-align:center;font-size:.56rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;padding:.2rem 0}
-.cal-cells{display:grid;grid-template-columns:repeat(7,1fr);gap:.25rem}
-.cal-cell{aspect-ratio:1;border-radius:7px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.72rem;color:var(--ink2)}
+/* ── MONTH CAL ── */
+.month-nav-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem}
+.mnav-btn{padding:.4rem .85rem;background:var(--surface);border:1px solid var(--border);border-radius:100px;font-family:'Space Mono',monospace;font-size:.65rem;font-weight:700;color:var(--muted);cursor:pointer}
+.mnav-btn:active{background:var(--surface2)}
+.mnav-title{font-family:'Space Mono',monospace;font-size:.85rem;font-weight:700}
+.cal-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:.9rem;margin-bottom:.9rem}
+.cal-dhr{display:grid;grid-template-columns:repeat(7,1fr);gap:.2rem;margin-bottom:.35rem}
+.cal-dh{text-align:center;font-size:.52rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;padding:.2rem 0}
+.cal-cells{display:grid;grid-template-columns:repeat(7,1fr);gap:.22rem}
+.cal-cell{aspect-ratio:1;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.68rem;color:var(--muted)}
 .cal-cell.empty{opacity:0;pointer-events:none}
-.cal-cell.has-data{background:var(--bg)}
-.cal-cell.today-cell{background:var(--ink);color:white;font-weight:700}
-.cal-cell.future{color:var(--light)}
+.cal-cell.has-data{background:var(--surface2);color:var(--text)}
+.cal-cell.today-cell{background:var(--gold);color:#000;font-weight:700}
+.cal-cell.future{color:var(--faint)}
 .cal-dot{width:4px;height:4px;border-radius:50%;margin-top:2px}
 
-/* STREAKS */
-.streaks-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
-.streak-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;box-shadow:var(--shadow);text-align:center}
-.sc-icon{font-size:1.5rem;margin-bottom:.3rem}
-.sc-val{font-family:'Playfair Display',serif;font-size:2rem;font-weight:500;color:var(--ink);line-height:1}
-.sc-name{font-size:.62rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:.2rem}
-.sc-fire{font-size:.72rem;margin-top:.2rem;min-height:1rem}
-.sc-best{font-size:.6rem;color:var(--light);margin-top:.2rem}
+/* ── STREAKS ── */
+.streaks-grid{display:grid;grid-template-columns:1fr 1fr;gap:.55rem}
+.streak-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:.9rem;text-align:center}
+.sc-icon{font-size:1.4rem;margin-bottom:.25rem}
+.sc-val{font-family:'Space Mono',monospace;font-size:1.8rem;font-weight:700;color:var(--text);line-height:1}
+.sc-name{font-size:.58rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:.15rem}
+.sc-fire{font-size:.68rem;margin-top:.2rem;min-height:.9rem}
+.sc-best{font-size:.57rem;color:var(--faint);margin-top:.15rem}
 
-/* BOTTOM NAV */
-.bottom-nav{flex-shrink:0;display:flex;background:var(--white);border-top:1px solid var(--border);padding-bottom:calc(.5rem + var(--safe-b));z-index:10}
-.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;padding:.6rem .3rem .4rem;background:none;border:none;cursor:pointer;color:var(--muted);font-family:'Instrument Sans',sans-serif;font-size:.58rem;font-weight:500;letter-spacing:.04em;text-transform:uppercase;gap:.25rem;transition:color .15s}
-.nav-btn.active{color:var(--ink)}
-.nav-icon{font-size:1.3rem;line-height:1}
+/* ── MONTHLY HABIT TABLE ── */
+.monthly-table{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:.9rem}
+.mt-header{display:grid;grid-template-columns:1fr 50px 70px;gap:.5rem;padding:.6rem .9rem;background:var(--surface2);border-bottom:1px solid var(--border)}
+.mt-col{font-size:.58rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.mt-row{display:grid;grid-template-columns:1fr 50px 70px;gap:.5rem;padding:.6rem .9rem;border-bottom:1px solid var(--border);align-items:center}
+.mt-row:last-child{border-bottom:none}
+.mt-name{font-size:.72rem;color:var(--text);display:flex;align-items:center;gap:.4rem}
+.mt-count{font-family:'Space Mono',monospace;font-size:.82rem;font-weight:700;text-align:center}
+.mt-bar-wrap{display:flex;align-items:center;gap:.4rem}
+.mt-bar-track{flex:1;height:4px;background:var(--surface2);border-radius:2px;overflow:hidden}
+.mt-bar-fill{height:100%;border-radius:2px;transition:width .5s}
+.mt-pct{font-size:.58rem;color:var(--muted);font-family:'Space Mono',monospace;width:26px;text-align:right}
 
-/* EXPORT MODAL */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(6px);z-index:200;display:none;align-items:flex-end;justify-content:center}
+/* ── BOTTOM NAV ── */
+.bottom-nav{flex-shrink:0;display:flex;background:var(--surface);border-top:1px solid var(--border);padding-bottom:calc(.4rem + var(--safe-b));z-index:10}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;padding:.55rem .2rem .35rem;background:none;border:none;cursor:pointer;color:var(--muted);font-family:'Instrument Sans',sans-serif;font-size:.52rem;font-weight:500;letter-spacing:.04em;text-transform:uppercase;gap:.2rem;transition:color .15s}
+.nav-btn.active{color:var(--gold)}
+.nav-icon{font-size:1.2rem;line-height:1}
+
+/* ── EXPORT MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:200;display:none;align-items:flex-end;justify-content:center}
 .modal-overlay.open{display:flex;animation:overlayIn .2s ease}
 @keyframes overlayIn{from{opacity:0}to{opacity:1}}
-.modal{background:var(--white);border-radius:20px 20px 0 0;width:100%;max-width:520px;padding-bottom:calc(1.2rem + var(--safe-b));animation:sheetUp .3s cubic-bezier(.34,1.56,.64,1);overflow:hidden}
+.modal{background:var(--surface);border-radius:18px 18px 0 0;width:100%;max-width:520px;padding-bottom:calc(1rem + var(--safe-b));animation:sheetUp .3s cubic-bezier(.34,1.56,.64,1);overflow:hidden;border:1px solid var(--border)}
 @keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.modal-handle{width:36px;height:4px;border-radius:2px;background:var(--border);margin:.75rem auto 0}
-.modal-head{padding:1rem 1.2rem .8rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)}
-.modal-title{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:500}
-.modal-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.1rem;padding:.2rem}
-.modal-body{padding:1rem 1.2rem;display:flex;flex-direction:column;gap:.6rem}
-.exp-btn{display:flex;align-items:center;gap:.85rem;padding:.9rem 1rem;background:var(--bg);border:1px solid var(--border);border-radius:12px;cursor:pointer;font-family:'Instrument Sans',sans-serif;font-size:.82rem;color:var(--ink2);font-weight:500;text-align:left;transition:background .15s}
-.exp-btn:active{background:var(--bg2)}
-.exp-icon{font-size:1.2rem;width:26px;text-align:center}
-.exp-name{font-weight:600;font-size:.82rem}
-.exp-desc{font-size:.64rem;color:var(--muted);margin-top:.1rem}
+.modal-handle{width:32px;height:3px;border-radius:2px;background:var(--border);margin:.6rem auto 0}
+.modal-head{padding:.9rem 1.1rem .7rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)}
+.modal-title{font-family:'Space Mono',monospace;font-size:.82rem;font-weight:700;letter-spacing:.06em;color:var(--gold)}
+.modal-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;padding:.2rem}
+.modal-body{padding:.9rem 1.1rem;display:flex;flex-direction:column;gap:.55rem}
+.exp-btn{display:flex;align-items:center;gap:.75rem;padding:.8rem .9rem;background:var(--surface2);border:1px solid var(--border);border-radius:10px;cursor:pointer;font-family:'Instrument Sans',sans-serif;font-size:.78rem;color:var(--muted);font-weight:500;text-align:left;transition:all .15s}
+.exp-btn:active{background:var(--border)}
+.exp-icon{font-size:1.1rem;width:22px;text-align:center}
+.exp-name{font-weight:600;font-size:.78rem;color:var(--text)}
+.exp-desc{font-size:.6rem;color:var(--muted);margin-top:.08rem}
 
-/* LOADING */
-.loading-screen{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:500;gap:1rem;transition:opacity .4s}
+/* ── LOADING ── */
+.loading-screen{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:500;gap:.75rem;transition:opacity .4s}
 .loading-screen.hidden{opacity:0;pointer-events:none}
-.loading-brand{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:600}
-.loading-brand span{color:var(--gold)}
-.loading-sub{font-size:.72rem;color:var(--muted);letter-spacing:.06em}
-.loading-dots{display:flex;gap:.4rem}
-.loading-dots span{width:6px;height:6px;border-radius:50%;background:var(--light);animation:dotPulse 1.2s infinite}
-.loading-dots span:nth-child(2){animation-delay:.2s}
-.loading-dots span:nth-child(3){animation-delay:.4s}
-@keyframes dotPulse{0%,100%{background:var(--light)}50%{background:var(--ink)}}
+.loading-brand{font-family:'Space Mono',monospace;font-size:1.4rem;font-weight:700;color:var(--gold);letter-spacing:.1em}
+.loading-dots{display:flex;gap:.35rem}
+.loading-dots span{width:5px;height:5px;border-radius:50%;background:var(--faint);animation:dotPulse 1.2s infinite}
+.loading-dots span:nth-child(2){animation-delay:.2s} .loading-dots span:nth-child(3){animation-delay:.4s}
+@keyframes dotPulse{0%,100%{background:var(--faint)}50%{background:var(--gold)}}
 
-/* TOAST */
-.toast{position:fixed;bottom:calc(var(--nav-h) + var(--safe-b) + 1rem);left:50%;transform:translateX(-50%) translateY(40px);background:var(--ink);color:var(--white);padding:.5rem 1.2rem;border-radius:100px;font-size:.78rem;font-weight:500;z-index:300;transition:transform .25s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;pointer-events:none}
+/* ── TOAST ── */
+.toast{position:fixed;bottom:calc(var(--nav-h) + var(--safe-b) + .75rem);left:50%;transform:translateX(-50%) translateY(40px);background:var(--green);color:#000;padding:.45rem 1.1rem;border-radius:100px;font-size:.72rem;font-weight:700;z-index:300;transition:transform .25s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;pointer-events:none;letter-spacing:.04em}
 .toast.show{transform:translateX(-50%) translateY(0)}
+.toast.err{background:var(--red);color:white}
 
 @media(min-width:600px){
-  .app{max-width:480px;margin:0 auto;box-shadow:0 0 60px rgba(0,0,0,.12)}
-  html{background:var(--bg2);display:flex;justify-content:center}
+  .app{max-width:480px;margin:0 auto;box-shadow:0 0 60px rgba(0,0,0,.5)}
+  html{background:#05050a;display:flex;justify-content:center}
 }
 @media(min-width:900px){
   html{align-items:center;min-height:100vh}
-  .app{height:88vh;border-radius:20px;overflow:hidden}
+  .app{height:88vh;border-radius:20px;overflow:hidden;border:1px solid var(--border)}
 }
 </style>
 </head>
 <body>
 
-<!-- Loading Screen -->
 <div class="loading-screen" id="loadingScreen">
-  <div class="loading-brand">Vijay<span>.</span></div>
+  <div class="loading-brand">VIJAY OS</div>
   <div class="loading-dots"><span></span><span></span><span></span></div>
-  <div class="loading-sub">Connecting to sync…</div>
 </div>
 
 <div class="app">
   <!-- Topbar -->
   <div class="topbar">
-    <div class="brand">Vijay<span>.</span> Daily</div>
+    <div class="brand">VIJAY OS</div>
     <div class="topbar-right">
-      <div class="topbar-date" id="topDate"></div>
-      <div class="sync-dot" id="syncDot" title="Sync status"></div>
+      <div class="sync-dot" id="syncDot"></div>
       <button class="icon-btn" onclick="openExport()">↑</button>
     </div>
+  </div>
+
+  <!-- Date Nav -->
+  <div class="date-nav">
+    <button class="dnav-btn" onclick="changeDate(-1)">◂</button>
+    <div class="date-center">
+      <div class="date-main" id="dateMain"></div>
+      <div class="date-sub"  id="dateSub"></div>
+      <div id="dateBadge"></div>
+    </div>
+    <button class="dnav-btn" id="dnNext" onclick="changeDate(1)">▸</button>
   </div>
 
   <!-- Score Strip -->
   <div class="score-strip">
     <div class="ring-wrap">
       <svg viewBox="0 0 50 50">
-        <circle class="ring-bg" cx="25" cy="25" r="22"/>
-        <circle class="ring-fill" id="ringFill" cx="25" cy="25" r="22"/>
+        <circle class="ring-bg" cx="25" cy="25" r="21"/>
+        <circle class="ring-fill" id="ringFill" cx="25" cy="25" r="21"/>
       </svg>
       <div class="ring-inner">
         <div class="ring-pct" id="ringPct">0%</div>
-        <div class="ring-lbl">today</div>
+        <div class="ring-lbl" id="ringLbl">score</div>
       </div>
     </div>
     <div class="score-info">
@@ -253,42 +337,48 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'Instrume
     <div class="cat-bars" id="catBars"></div>
   </div>
 
-  <!-- Scroll Area -->
+  <!-- Scroll -->
   <div class="scroll-area" id="scrollArea">
 
-    <!-- TODAY -->
+    <!-- TODAY / HABITS -->
     <div class="section active" id="tab-today">
+
+      <!-- Health & Body -->
       <div class="cat-block">
         <div class="cat-head">
           <div class="cat-dot" style="background:var(--health)"></div>
-          <div class="cat-title">Health &amp; Body</div>
+          <div class="cat-title" style="color:var(--health)">Health &amp; Body</div>
           <div class="cat-pts">25 pts</div>
         </div>
         <div class="habits-row" id="healthHabits"></div>
       </div>
+
+      <!-- Wellness -->
       <div class="cat-block">
         <div class="cat-head">
           <div class="cat-dot" style="background:var(--wellness)"></div>
-          <div class="cat-title">Wellness</div>
+          <div class="cat-title" style="color:var(--wellness)">Wellness</div>
           <div class="cat-pts">25 pts</div>
         </div>
         <div class="habits-row" id="wellnessHabits"></div>
       </div>
+
+      <!-- Tasks -->
       <div class="cat-block">
         <div class="cat-head">
           <div class="cat-dot" style="background:var(--tasks)"></div>
-          <div class="cat-title">Tasks</div>
+          <div class="cat-title" style="color:var(--tasks)">Tasks</div>
           <div class="cat-pts">50 pts</div>
         </div>
         <div class="tasks-card">
           <div class="tasks-head">
-            <div class="tasks-head-title">Task List</div>
-            <div class="tasks-meta" id="tasksMeta">0 / 0 done</div>
+            <div class="tasks-head-title">TASK LIST</div>
+            <div class="tasks-meta" id="tasksMeta">0 / 0</div>
           </div>
-          <div class="task-add-wrap">
+          <div class="task-add-wrap" id="taskAddWrap">
             <div class="task-add-row">
               <input class="task-inp" id="taskInp" placeholder="Add a task…" onkeydown="if(event.key==='Enter')addTask()">
-              <button class="task-add-btn" onclick="addTask()">Add</button>
+              <button class="task-add-btn" onclick="addTask()">ADD</button>
             </div>
             <div class="task-cats">
               <div class="cat-chip active" data-val="work"  onclick="selectCat(this)">Work</div>
@@ -299,13 +389,29 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'Instrume
           <div class="task-list" id="taskList"></div>
         </div>
       </div>
+
+    </div>
+
+    <!-- PLANETS -->
+    <div class="section" id="tab-planets">
+      <div id="planetHabits"></div>
+      <div style="margin:1rem 0 .6rem">
+        <div style="font-family:'Space Mono',monospace;font-size:.72rem;font-weight:700;letter-spacing:.06em;color:var(--gold);margin-bottom:.3rem">PLANET STATE TRACKER</div>
+        <div style="font-size:.65rem;color:var(--muted);margin-bottom:.75rem">Which planet dominated today? Track your inner state.</div>
+      </div>
+      <div id="planetStates"></div>
+    </div>
+
+    <!-- JOURNAL -->
+    <div class="section" id="tab-journal">
+      <div id="journalContent"></div>
     </div>
 
     <!-- WEEK -->
     <div class="section" id="tab-week">
       <div class="stats-row" id="weekStats"></div>
       <div class="report-card">
-        <div class="rc-title">This Week</div>
+        <div class="rc-title">THIS WEEK</div>
         <div class="rc-body" id="weekBars"></div>
       </div>
       <div class="con-card" id="weekCon"></div>
@@ -313,16 +419,18 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'Instrume
 
     <!-- MONTH -->
     <div class="section" id="tab-month">
-      <div class="month-nav">
-        <button class="mnav-btn" onclick="changeMonth(-1)">← Prev</button>
+      <div class="month-nav-row">
+        <button class="mnav-btn" onclick="changeViewMonth(-1)">← PREV</button>
         <div class="mnav-title" id="mnTitle"></div>
-        <button class="mnav-btn" onclick="changeMonth(1)">Next →</button>
+        <button class="mnav-btn" onclick="changeViewMonth(1)">NEXT →</button>
       </div>
       <div class="stats-row" id="monthStats"></div>
       <div class="cal-wrap">
-        <div class="cal-days-hdr" id="calHdr"></div>
-        <div class="cal-cells"    id="calCells"></div>
+        <div class="cal-dhr" id="calHdr"></div>
+        <div class="cal-cells" id="calCells"></div>
       </div>
+      <!-- Monthly habit counts table -->
+      <div class="monthly-table" id="monthlyTable"></div>
       <div class="con-card" id="monthCon"></div>
     </div>
 
@@ -335,7 +443,9 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'Instrume
 
   <!-- Bottom Nav -->
   <nav class="bottom-nav">
-    <button class="nav-btn active" onclick="switchTab('today',this)"><span class="nav-icon">☀️</span>Today</button>
+    <button class="nav-btn active" onclick="switchTab('today',this)"><span class="nav-icon">☀️</span>Habits</button>
+    <button class="nav-btn"        onclick="switchTab('planets',this)"><span class="nav-icon">🪐</span>Planets</button>
+    <button class="nav-btn"        onclick="switchTab('journal',this)"><span class="nav-icon">📓</span>Journal</button>
     <button class="nav-btn"        onclick="switchTab('week',this)"><span class="nav-icon">📊</span>Week</button>
     <button class="nav-btn"        onclick="switchTab('month',this)"><span class="nav-icon">📅</span>Month</button>
     <button class="nav-btn"        onclick="switchTab('streaks',this)"><span class="nav-icon">🔥</span>Streaks</button>
@@ -347,13 +457,13 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'Instrume
   <div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-head">
-      <div class="modal-title">Export Data</div>
+      <div class="modal-title">EXPORT DATA</div>
       <button class="modal-close" onclick="closeExport()">✕</button>
     </div>
     <div class="modal-body">
       <button class="exp-btn" onclick="exportJSON()">
         <span class="exp-icon">{ }</span>
-        <div><div class="exp-name">JSON — Full Raw Data</div><div class="exp-desc">For apps, APIs, future integrations</div></div>
+        <div><div class="exp-name">JSON — Full Raw Data</div><div class="exp-desc">All habits, tasks, journal, planet states</div></div>
       </button>
       <button class="exp-btn" onclick="exportCSV()">
         <span class="exp-icon">⊞</span>
@@ -361,7 +471,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'Instrume
       </button>
       <button class="exp-btn" onclick="exportReport()">
         <span class="exp-icon">📋</span>
-        <div><div class="exp-name">Text Report</div><div class="exp-desc">Human-readable habit log</div></div>
+        <div><div class="exp-name">Text Report</div><div class="exp-desc">Human-readable full log</div></div>
       </button>
     </div>
   </div>
@@ -369,21 +479,16 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'Instrume
 
 <div class="toast" id="toast"></div>
 
-<!-- Firebase -->
 <script type="module">
-import { initializeApp }          from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getDatabase, ref, set, onValue, get }
-  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+import { initializeApp }     from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getDatabase, ref, set, onValue } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
 
-// ── CONFIG ────────────────────────────────────────────────────────────────────
-const firebaseConfig = {
-  databaseURL: 'https://vijay-habits-default-rtdb.firebaseio.com'
-};
-const app = initializeApp(firebaseConfig);
+// ── FIREBASE ──────────────────────────────────────────────────────────────────
+const app = initializeApp({ databaseURL:'https://vijay-habits-default-rtdb.firebaseio.com' });
 const db  = getDatabase(app);
 const ROOT = 'vijay';
 
-// ── HABITS ────────────────────────────────────────────────────────────────────
+// ── HABITS CONFIG ─────────────────────────────────────────────────────────────
 const HEALTH_HABITS = [
   { id:'workout',  icon:'💪', name:'Workout',       pts:7,  color:'var(--health)'   },
   { id:'diet',     icon:'🥗', name:'Healthy Diet',  pts:6,  color:'var(--health)'   },
@@ -395,54 +500,95 @@ const WELLNESS_HABITS = [
   { id:'no_fap',     icon:'🧘', name:'No Fap',      pts:9,  color:'var(--wellness)' },
   { id:'calm_kind',  icon:'🌿', name:'Calm & Kind', pts:7,  color:'var(--wellness)' },
 ];
-const ALL_HABITS  = [...HEALTH_HABITS, ...WELLNESS_HABITS];
+const ALL_PERSONAL_HABITS = [...HEALTH_HABITS, ...WELLNESS_HABITS];
 const MAX_HEALTH  = HEALTH_HABITS.reduce((s,h)=>s+h.pts,0);
 const MAX_WELL    = WELLNESS_HABITS.reduce((s,h)=>s+h.pts,0);
 const MAX_TASK    = 50;
 
-let cache        = {};   // local mirror of Firebase data
-let selectedCat  = 'work';
-let viewMonth    = new Date();
-let currentTab   = 'today';
+// ── PLANET CONFIG ─────────────────────────────────────────────────────────────
+const PLANET_META = {
+  jupiter: { label:'Jupiter', symbol:'♃', color:'var(--jupiter)', cssVar:'jupiter' },
+  mars:    { label:'Mars',    symbol:'♂', color:'var(--mars)',    cssVar:'mars'    },
+  venus:   { label:'Venus',   symbol:'♀', color:'var(--venus)',   cssVar:'venus'   },
+  mercury: { label:'Mercury', symbol:'☿', color:'var(--mercury)', cssVar:'mercury' },
+  saturn:  { label:'Saturn',  symbol:'♄', color:'var(--saturn)',  cssVar:'saturn'  },
+  sun:     { label:'Sun',     symbol:'☉', color:'var(--sun)',     cssVar:'sun'     },
+};
 
-const todayStr   = () => new Date().toISOString().slice(0,10);
-const dbRef      = path => ref(db, `${ROOT}/${path}`);
+const PLANET_HABITS = [
+  { id:'meditation_j', icon:'🧠', name:'10 min Meditation', planet:'jupiter', meta:"CEO training — observe, don't react" },
+  { id:'morning_q',    icon:'🌅', name:'Morning 3 Questions', planet:'jupiter', meta:'Priority, planet lead, say NO to what?' },
+  { id:'eod_review',  icon:'🌙', name:'End-of-Day Review', planet:'jupiter', meta:'5 min — what moved forward?' },
+  { id:'outreach',    icon:'📞', name:'1 Outreach Action', planet:'mars',    meta:'DM, call, follow-up — move something' },
+  { id:'workout_m',   icon:'⚡', name:'Workout / Physical', planet:'mars',    meta:'Body = Mars fuel. Move daily.' },
+  { id:'creative',    icon:'🎨', name:'Creative Work Block', planet:'venus',   meta:'Concept, edit, visual — no switching' },
+  { id:'content',     icon:'📱', name:'1 Content Piece', planet:'mercury',  meta:'Post, story, reel — show your thinking' },
+  { id:'learning_m',  icon:'📚', name:'30 min Brand Study', planet:'mercury', meta:'1 case study. Apply or skip.' },
+  { id:'admin',       icon:'📋', name:'Admin / Finance Task', planet:'saturn', meta:'Invoice, budget, process, follow-up' },
+  { id:'identity',    icon:'👑', name:'Identity Alignment', planet:'sun',     meta:'Did I show up as brand filmmaker today?' },
+];
+
+const PLANET_STATES = {
+  jupiter: ['Clarity & Direction','Overthinking Purpose','Calm Observer','Scattered / No Priority'],
+  mars:    ['Focused Execution','Angry / Impatient','Action Without Plan','Paralyzed / No Drive'],
+  venus:   ['Deep Creative Flow','Perfectionism Loop','Comfort Seeking','Inspired but Unfocused'],
+  mercury: ['Sharp & Articulate','Overthinking / Research Hole','Clear Communication','Information Hoarding'],
+  saturn:  ['Disciplined & Structured','Fear / Self-doubt','Scarcity Mindset','Patient & Systematic'],
+  sun:     ['Confident & Commanding','Ego / Rejecting Small Work','Needing Validation','Quiet Authority'],
+};
+
+const ALL_HABITS_FOR_STATS = ALL_PERSONAL_HABITS;
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let cache       = {};
+let viewDate    = new Date();
+let viewMonth   = new Date();
+let selectedCat = 'work';
+let currentTab  = 'today';
+
+const fmt       = d => d.toISOString().slice(0,10);
+const todayStr  = () => fmt(new Date());
+const isToday   = d => fmt(d) === todayStr();
+const isFuture  = d => fmt(d) > todayStr();
+
+// 3-day backdating window: can log today and up to 3 days in the past
+const isLoggable = d => {
+  const diff = (new Date(todayStr()) - new Date(fmt(d))) / 86400000;
+  return diff >= 0 && diff <= 3;
+};
+
 const setSyncDot = s => {
   const d = document.getElementById('syncDot');
   d.className = 'sync-dot ' + s;
 };
 
-// ── FIREBASE SYNC ─────────────────────────────────────────────────────────────
+// ── FIREBASE ──────────────────────────────────────────────────────────────────
 function initSync() {
   setSyncDot('syncing');
   onValue(ref(db, ROOT), snap => {
     cache = snap.val() || {};
     setSyncDot('synced');
-    renderAll();
-    if(currentTab === 'week')    renderWeek();
-    if(currentTab === 'month')   renderMonth();
-    if(currentTab === 'streaks') renderStreaks();
+    renderCurrentView();
     document.getElementById('loadingScreen').classList.add('hidden');
   }, err => {
     setSyncDot('error');
-    console.error(err);
     document.getElementById('loadingScreen').classList.add('hidden');
-    toast('Sync error — check connection');
+    toast('Sync error', true);
   });
 }
 
 function getDay(date) {
-  return cache[date] || { habits:{}, tasks:[] };
+  return cache[date] || { habits:{}, pHabits:{}, tasks:[], planetStates:{}, journal:{} };
 }
 
 async function writeDay(date, day) {
   setSyncDot('syncing');
   try {
-    await set(dbRef(date), day);
+    await set(ref(db, `${ROOT}/${date}`), day);
     setSyncDot('synced');
   } catch(e) {
     setSyncDot('error');
-    toast('Save failed — check connection');
+    toast('Save failed', true);
   }
 }
 
@@ -452,246 +598,459 @@ function calcScore(date) {
   let hp=0, wp=0;
   HEALTH_HABITS.forEach(h  => { if(day.habits?.[h.id]) hp += h.pts; });
   WELLNESS_HABITS.forEach(h => { if(day.habits?.[h.id]) wp += h.pts; });
-  const tasks = day.tasks || [];
-  const done  = Array.isArray(tasks) ? tasks.filter(t=>t&&t.done).length : 0;
-  const total = Array.isArray(tasks) ? tasks.filter(t=>t).length : 0;
-  const tp    = total ? Math.round((done/total)*MAX_TASK) : 0;
-  return { total:hp+wp+tp, pct:hp+wp+tp, hp, wp, tp, done, total_tasks:total };
+  const tasks = Array.isArray(day.tasks) ? day.tasks.filter(Boolean) : [];
+  const done  = tasks.filter(t=>t.done).length;
+  const tp    = tasks.length ? Math.round((done/tasks.length)*MAX_TASK) : 0;
+  return { total:hp+wp+tp, pct:hp+wp+tp, hp, wp, tp, done, total_tasks:tasks.length };
 }
 
 function grade(pct) {
-  if(pct>=90) return { label:'🔥 Elite',    color:'#1a1a1a' };
-  if(pct>=75) return { label:'💪 Strong',   color:'#2d5a27' };
-  if(pct>=50) return { label:'📈 Building', color:'#1a3a5c' };
-  if(pct>=25) return { label:'🌱 Starting', color:'#b8943f' };
-  return             { label:'💤 Rest Day', color:'#8a8a8a' };
+  if(pct>=90) return { label:'🔥 ELITE',    color:'var(--green)' };
+  if(pct>=75) return { label:'💪 STRONG',   color:'var(--green)' };
+  if(pct>=50) return { label:'📈 BUILDING', color:'var(--jupiter)' };
+  if(pct>=25) return { label:'🌱 STARTING', color:'var(--saturn)' };
+  return             { label:'💤 REST',     color:'var(--muted)' };
 }
 
 function barColor(pct) {
-  if(pct>=75) return '#2d5a27';
-  if(pct>=50) return '#1a3a5c';
-  if(pct>=25) return '#b8943f';
-  return '#c0392b';
+  if(pct>=75) return 'var(--green)';
+  if(pct>=50) return 'var(--mercury)';
+  if(pct>=25) return 'var(--jupiter)';
+  return 'var(--red)';
 }
 
-// ── RENDER ────────────────────────────────────────────────────────────────────
-function updateHeader() {
-  const s = calcScore(todayStr());
-  const circ = 2 * Math.PI * 22;
+// ── MONTHLY COUNT ─────────────────────────────────────────────────────────────
+function getMonthlyCount(habitId, isPlanet, yr, mo) {
+  const year  = yr  !== undefined ? yr  : viewMonth.getFullYear();
+  const month = mo  !== undefined ? mo  : viewMonth.getMonth();
+  const dim   = new Date(year, month+1, 0).getDate();
+  let count   = 0;
+  for(let d=1; d<=dim; d++){
+    const ds  = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const day = cache[ds];
+    if(!day) continue;
+    if(isPlanet ? day.pHabits?.[habitId] : day.habits?.[habitId]) count++;
+  }
+  return count;
+}
+
+function getMonthDaysPassed(yr, mo) {
+  const year  = yr !== undefined ? yr  : viewMonth.getFullYear();
+  const month = mo !== undefined ? mo  : viewMonth.getMonth();
+  const now   = new Date();
+  if(now.getFullYear()===year && now.getMonth()===month) return now.getDate();
+  if(new Date(year, month) < new Date(now.getFullYear(), now.getMonth())) return new Date(year,month+1,0).getDate();
+  return 0;
+}
+
+// ── HEADER ────────────────────────────────────────────────────────────────────
+function updateDateNav() {
+  const d   = viewDate;
+  document.getElementById('dateMain').textContent = d.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}).toUpperCase();
+  document.getElementById('dateSub').textContent  = d.toLocaleDateString('en-IN',{weekday:'long'}).toUpperCase();
+  const badge = document.getElementById('dateBadge');
+  const locked = !isLoggable(d) && !isFuture(d);
+  if(isToday(d))   badge.innerHTML='<span class="date-badge badge-today">TODAY</span>';
+  else if(locked)  badge.innerHTML='<span class="date-badge badge-locked">LOCKED</span>';
+  else if(!isFuture(d)) badge.innerHTML='<span class="date-badge badge-past">BACK-LOG</span>';
+  else             badge.innerHTML='';
+  document.getElementById('dnNext').disabled = isToday(d);
+}
+
+function updateScoreStrip() {
+  const ds = fmt(viewDate);
+  const s  = calcScore(ds);
+  const circ = 2*Math.PI*21;
   document.getElementById('ringFill').style.strokeDashoffset = circ - (s.pct/100*circ);
-  document.getElementById('ringPct').textContent  = s.pct + '%';
+  document.getElementById('ringFill').style.stroke = s.pct>=75?'var(--green)':s.pct>=50?'var(--mercury)':s.pct>=25?'var(--jupiter)':'var(--red)';
+  document.getElementById('ringPct').textContent  = s.pct+'%';
   const g = grade(s.pct);
   document.getElementById('scoreGrade').textContent = g.label;
-  document.getElementById('scoreSub').textContent   =
-    s.pct>=75 ? 'Excellent day. Keep going.' :
-    s.pct>=50 ? 'Good progress. Push further.' :
-    s.pct>=25 ? 'Getting started — keep at it.' : 'New day. Clean slate.';
+  document.getElementById('scoreGrade').style.color = g.color;
+  document.getElementById('scoreSub').textContent =
+    s.pct>=75?'Excellent. Keep it going.':
+    s.pct>=50?'Good progress. Push further.':
+    s.pct>=25?'Getting started — keep at it.':'New day. Clean slate.';
 
-  document.getElementById('catBars').innerHTML = `
-    <div class="cat-bar-row">
-      <span class="cat-bar-label" style="color:var(--health)">H</span>
-      <div class="cat-bar-track"><div class="cat-bar-fill" style="width:${s.hp/MAX_HEALTH*100}%;background:var(--health)"></div></div>
-      <span class="cat-bar-val">${s.hp}</span>
-    </div>
-    <div class="cat-bar-row">
-      <span class="cat-bar-label" style="color:var(--wellness)">W</span>
-      <div class="cat-bar-track"><div class="cat-bar-fill" style="width:${s.wp/MAX_WELL*100}%;background:var(--wellness)"></div></div>
-      <span class="cat-bar-val">${s.wp}</span>
-    </div>
-    <div class="cat-bar-row">
-      <span class="cat-bar-label" style="color:var(--tasks)">T</span>
-      <div class="cat-bar-track"><div class="cat-bar-fill" style="width:${s.tp/MAX_TASK*100}%;background:var(--tasks)"></div></div>
-      <span class="cat-bar-val">${s.tp}</span>
-    </div>
+  document.getElementById('catBars').innerHTML=`
+    <div class="cbr"><span class="cbr-lbl" style="color:var(--health)">H</span><div class="cbr-track"><div class="cbr-fill" style="width:${s.hp/MAX_HEALTH*100}%;background:var(--health)"></div></div><span class="cbr-val">${s.hp}</span></div>
+    <div class="cbr"><span class="cbr-lbl" style="color:var(--wellness)">W</span><div class="cbr-track"><div class="cbr-fill" style="width:${s.wp/MAX_WELL*100}%;background:var(--wellness)"></div></div><span class="cbr-val">${s.wp}</span></div>
+    <div class="cbr"><span class="cbr-lbl" style="color:var(--tasks)">T</span><div class="cbr-track"><div class="cbr-fill" style="width:${s.tp/MAX_TASK*100}%;background:var(--tasks)"></div></div><span class="cbr-val">${s.tp}</span></div>
   `;
 }
 
-function renderHabits(habits, id) {
-  const day = getDay(todayStr());
-  const el  = document.getElementById(id);
-  el.innerHTML = '';
+// ── RENDER HABITS ─────────────────────────────────────────────────────────────
+function renderHabits(habits, elId) {
+  const ds  = fmt(viewDate);
+  const day = getDay(ds);
+  const locked = !isLoggable(viewDate) || isFuture(viewDate);
+  const el  = document.getElementById(elId);
+  el.innerHTML='';
   habits.forEach(h => {
-    const done = !!(day.habits && day.habits[h.id]);
+    const done = !!day.habits?.[h.id];
+    const mc   = getMonthlyCount(h.id, false);
+    const mdp  = getMonthDaysPassed();
     const card = document.createElement('div');
-    card.className = 'habit-card' + (done ? ' done' : '');
-    card.style.color = h.color;
-    card.innerHTML = `
-      <div class="hc-top">
-        <span class="hc-icon">${h.icon}</span>
-        <div class="hc-check">${done ? '✓' : ''}</div>
-      </div>
-      <div class="hc-name">${h.name}</div>
-      <div class="hc-pts">+${h.pts} pts${done ? ' · done' : ''}</div>
+    card.className='p-habit-card'+(done?' done':'')+(locked?' locked':'');
+    card.style.color=h.color;
+    card.innerHTML=`
+      <div class="phc-top"><span class="phc-icon">${h.icon}</span><div class="phc-check">${done?'✓':''}</div></div>
+      <div class="phc-name">${h.name}</div>
+      <div class="phc-pts">+${h.pts} pts${done?' · done':''}</div>
+      <div class="phc-month">${mc}/${mdp}</div>
     `;
-    card.onclick = () => toggleHabit(h.id);
+    if(!locked) card.onclick = () => togglePersonalHabit(h.id);
     el.appendChild(card);
   });
 }
 
+// ── RENDER TASKS ──────────────────────────────────────────────────────────────
 function renderTasks() {
-  const day   = getDay(todayStr());
-  const tasks = Array.isArray(day.tasks) ? day.tasks.filter(t=>t) : [];
+  const ds    = fmt(viewDate);
+  const day   = getDay(ds);
+  const tasks = Array.isArray(day.tasks) ? day.tasks.filter(Boolean) : [];
   const done  = tasks.filter(t=>t.done).length;
-  document.getElementById('tasksMeta').textContent = done + ' / ' + tasks.length + ' done';
+  const locked = !isLoggable(viewDate) || isFuture(viewDate);
+  document.getElementById('tasksMeta').textContent = done+' / '+tasks.length;
+  document.getElementById('taskAddWrap').style.display = locked?'none':'block';
+
   const list = document.getElementById('taskList');
   if(!tasks.length){ list.innerHTML='<div class="no-tasks">No tasks yet.</div>'; return; }
-  list.innerHTML = '';
-  tasks.forEach((t, i) => {
-    const tc = t.cat==='work'?'tag-work':t.cat==='learn'?'tag-learn':'tag-other';
-    const tl = t.cat==='work'?'Work':t.cat==='learn'?'Learn':'Other';
-    const el = document.createElement('div');
-    el.className = 'task-item' + (t.done ? ' done' : '');
-    el.innerHTML = `
-      <button class="task-cb" onclick="window._toggleTask(${i})">${t.done?'✓':''}</button>
+  list.innerHTML='';
+  tasks.forEach((t,i) => {
+    const tc=t.cat==='work'?'tag-work':t.cat==='learn'?'tag-learn':'tag-other';
+    const tl=t.cat==='work'?'Work':t.cat==='learn'?'Learn':'Other';
+    const el=document.createElement('div');
+    el.className='task-item'+(t.done?' done':'');
+    el.innerHTML=`
+      <button class="task-cb" onclick="window._toggleTask('${ds}',${i})">${t.done?'✓':''}</button>
       <span class="task-text">${t.text}</span>
       <span class="task-tag ${tc}">${tl}</span>
-      <button class="task-del" onclick="window._deleteTask(${i})">✕</button>
+      ${!locked?`<button class="task-del" onclick="window._deleteTask('${ds}',${i})">✕</button>`:''}
     `;
     list.appendChild(el);
   });
 }
 
+// ── RENDER PLANET HABITS ──────────────────────────────────────────────────────
+function renderPlanetHabits() {
+  const ds    = fmt(viewDate);
+  const day   = getDay(ds);
+  const locked = !isLoggable(viewDate) || isFuture(viewDate);
+  const grouped = {};
+  PLANET_HABITS.forEach(h => { if(!grouped[h.planet]) grouped[h.planet]=[]; grouped[h.planet].push(h); });
+
+  let html='';
+  Object.entries(grouped).forEach(([planet, habits]) => {
+    const pm  = PLANET_META[planet];
+    const mdp = getMonthDaysPassed();
+    html+=`<div style="margin-bottom:1.2rem">
+      <div class="p-header" style="background:color-mix(in srgb,${pm.color} 12%,transparent);color:${pm.color}">
+        <span style="font-family:'Space Mono',monospace;font-size:.9rem">${pm.symbol}</span> ${pm.label}
+      </div>`;
+    habits.forEach(h => {
+      const done = !!day.pHabits?.[h.id];
+      const mc   = getMonthlyCount(h.id, true);
+      html+=`<div class="habit-card ${done?'done':''} ${locked?'locked':''}" ${!locked?`onclick="window._togglePHabit('${h.id}')"`:''}">
+        <div class="hc-check">${done?'✓':''}</div>
+        <div class="hc-info"><div class="hc-name">${h.icon} ${h.name}</div><div class="hc-meta">${h.meta}</div></div>
+        <div class="hc-month"><div class="hc-month-num" style="color:${pm.color}">${mc}</div><div class="hc-month-lbl">/${mdp}d</div></div>
+      </div>`;
+    });
+    html+='</div>';
+  });
+  document.getElementById('planetHabits').innerHTML=html;
+}
+
+// ── RENDER PLANET STATES ──────────────────────────────────────────────────────
+function renderPlanetStates() {
+  const ds    = fmt(viewDate);
+  const day   = getDay(ds);
+  const locked = !isLoggable(viewDate) || isFuture(viewDate);
+  let html='';
+  Object.entries(PLANET_STATES).forEach(([planet, states]) => {
+    const pm  = PLANET_META[planet];
+    const sel = day.planetStates?.[planet];
+    html+=`<div class="planet-card">
+      <div class="pc-header"><span class="pc-symbol" style="color:${pm.color}">${pm.symbol}</span><div class="pc-title">${pm.label}</div></div>
+      <div class="pc-sub">How did ${pm.label} show up today?</div>
+      <div class="planet-opts">
+        ${states.map(s=>`<button class="p-opt ${sel===s?'selected':''}" style="${sel===s?`color:${pm.color};border-color:${pm.color}`:''}" ${!locked?`onclick="window._setPlanetState('${planet}','${s.replace(/'/g,"\\'")}')"`:''}>${s}</button>`).join('')}
+      </div>
+    </div>`;
+  });
+  document.getElementById('planetStates').innerHTML=html;
+}
+
+// ── RENDER JOURNAL ────────────────────────────────────────────────────────────
+function renderJournal() {
+  const ds    = fmt(viewDate);
+  const day   = getDay(ds);
+  const j     = day.journal || {};
+  const locked = !isLoggable(viewDate) || isFuture(viewDate);
+  const dis   = locked ? 'disabled' : '';
+  const onChange = (key) => locked?'':`onchange="window._saveJournal('${ds}','${key}',this.value)"`;
+
+  const planets = ['mars','venus','mercury','saturn','sun'];
+
+  let html=`
+    <div style="font-family:'Space Mono',monospace;font-size:.72rem;font-weight:700;letter-spacing:.07em;color:var(--gold);margin-bottom:.9rem">♃ MORNING — CEO JUPITER</div>
+
+    <div class="journal-block">
+      <div class="jb-label">1. What is my ONE priority today?</div>
+      <div class="jb-hint">Not 5 things. One.</div>
+      <input class="jb-input" type="text" value="${(j.priority||'').replace(/"/g,'&quot;')}" placeholder="My one priority…" ${onChange('priority')} ${dis}>
+    </div>
+
+    <div class="journal-block">
+      <div class="jb-label">2. Which planet leads today?</div>
+      <div class="jb-hint">Mars (pitch), Venus (create), Mercury (learn), Saturn (systems), Sun (visibility)</div>
+      <div class="planet-lead-opts">
+        ${planets.map(pk=>{
+          const pm=PLANET_META[pk];
+          const sel=j.leadPlanet===pk;
+          return `<button class="p-opt ${sel?'selected':''}" style="${sel?`color:${pm.color};border-color:${pm.color}`:''}" ${!locked?`onclick="window._saveJournalDirect('${ds}','leadPlanet','${pk}')"`:''}>${pm.symbol} ${pm.label}</button>`;
+        }).join('')}
+      </div>
+    </div>
+
+    <div class="journal-block">
+      <div class="jb-label">3. What will I say NO to today?</div>
+      <div class="jb-hint">Jupiter's job = rejection of distractions</div>
+      <textarea class="jb-input" rows="2" placeholder="Today I say no to…" ${onChange('sayNo')} ${dis}>${j.sayNo||''}</textarea>
+    </div>
+
+    <div style="font-family:'Space Mono',monospace;font-size:.72rem;font-weight:700;letter-spacing:.07em;color:var(--gold);margin:1.1rem 0 .9rem">🌙 END OF DAY — REVIEW</div>
+
+    <div class="journal-block">
+      <div class="jb-label">What moved forward today?</div>
+      <textarea class="jb-input" rows="2" placeholder="Progress…" ${onChange('eodForward')} ${dis}>${j.eodForward||''}</textarea>
+    </div>
+
+    <div class="journal-block">
+      <div class="jb-label">What didn't move? Why?</div>
+      <textarea class="jb-input" rows="2" placeholder="Stuck on…" ${onChange('eodStuck')} ${dis}>${j.eodStuck||''}</textarea>
+    </div>
+
+    <div class="journal-block">
+      <div class="jb-label">Which planet hijacked today?</div>
+      <div class="jb-hint">Which voice took over and pulled you off track?</div>
+      <div class="planet-lead-opts">
+        ${Object.entries(PLANET_META).map(([pk,pm])=>{
+          const sel=j.hijacker===pk;
+          return `<button class="p-opt ${sel?'selected':''}" style="${sel?`color:${pm.color};border-color:${pm.color}`:''}" ${!locked?`onclick="window._saveJournalDirect('${ds}','hijacker','${pk}')"`:''}>${pm.symbol} ${pm.label}</button>`;
+        }).join('')}
+      </div>
+    </div>
+  `;
+  document.getElementById('journalContent').innerHTML=html;
+}
+
+// ── RENDER ALL TODAY ──────────────────────────────────────────────────────────
 function renderAll() {
-  updateHeader();
+  updateDateNav();
+  updateScoreStrip();
   renderHabits(HEALTH_HABITS,   'healthHabits');
   renderHabits(WELLNESS_HABITS, 'wellnessHabits');
   renderTasks();
 }
 
-// ── ACTIONS ───────────────────────────────────────────────────────────────────
-async function toggleHabit(id) {
-  const date = todayStr();
-  const day  = JSON.parse(JSON.stringify(getDay(date)));
-  if(!day.habits) day.habits = {};
-  day.habits[id] = !day.habits[id];
-  cache[date] = day;
+function renderCurrentView() {
   renderAll();
-  await writeDay(date, day);
-  toast(day.habits[id] ? '✓ Logged' : 'Removed');
+  if(currentTab==='planets')  { renderPlanetHabits(); renderPlanetStates(); }
+  if(currentTab==='journal')  renderJournal();
+  if(currentTab==='week')     renderWeek();
+  if(currentTab==='month')    renderMonth();
+  if(currentTab==='streaks')  renderStreaks();
 }
+
+// ── ACTIONS ───────────────────────────────────────────────────────────────────
+async function togglePersonalHabit(id) {
+  const ds  = fmt(viewDate);
+  const day = JSON.parse(JSON.stringify(getDay(ds)));
+  if(!day.habits) day.habits={};
+  day.habits[id] = !day.habits[id];
+  cache[ds]=day; renderAll();
+  await writeDay(ds, day);
+  toast(day.habits[id]?'✓ Logged':'Removed');
+}
+
+window._togglePHabit = async id => {
+  const ds  = fmt(viewDate);
+  const day = JSON.parse(JSON.stringify(getDay(ds)));
+  if(!day.pHabits) day.pHabits={};
+  day.pHabits[id] = !day.pHabits[id];
+  cache[ds]=day; renderPlanetHabits();
+  await writeDay(ds, day);
+  toast(day.pHabits[id]?'✓ Logged':'Removed');
+};
+
+window._setPlanetState = async (planet, state) => {
+  const ds  = fmt(viewDate);
+  const day = JSON.parse(JSON.stringify(getDay(ds)));
+  if(!day.planetStates) day.planetStates={};
+  day.planetStates[planet] = day.planetStates[planet]===state ? null : state;
+  cache[ds]=day; renderPlanetStates();
+  await writeDay(ds, day);
+  toast('State saved');
+};
 
 window.selectCat = el => {
   document.querySelectorAll('.cat-chip').forEach(c=>c.classList.remove('active'));
   el.classList.add('active');
-  selectedCat = el.dataset.val;
+  selectedCat=el.dataset.val;
 };
 
 window.addTask = async () => {
-  const inp  = document.getElementById('taskInp');
-  const text = inp.value.trim();
+  if(isFuture(viewDate)||!isLoggable(viewDate)) return;
+  const inp=document.getElementById('taskInp');
+  const text=inp.value.trim();
   if(!text) return;
-  const date = todayStr();
-  const day  = JSON.parse(JSON.stringify(getDay(date)));
-  if(!Array.isArray(day.tasks)) day.tasks = [];
-  day.tasks.push({ text, cat:selectedCat, done:false });
-  cache[date] = day;
-  inp.value = '';
-  renderAll();
-  await writeDay(date, day);
+  const ds=fmt(viewDate);
+  const day=JSON.parse(JSON.stringify(getDay(ds)));
+  if(!Array.isArray(day.tasks)) day.tasks=[];
+  day.tasks.push({text,cat:selectedCat,done:false});
+  cache[ds]=day; inp.value=''; renderAll();
+  await writeDay(ds, day);
   toast('Task added');
 };
 
-window._toggleTask = async i => {
-  const date = todayStr();
-  const day  = JSON.parse(JSON.stringify(getDay(date)));
-  if(day.tasks && day.tasks[i]) day.tasks[i].done = !day.tasks[i].done;
-  cache[date] = day;
-  renderAll();
-  await writeDay(date, day);
+window._toggleTask = async (ds, i) => {
+  const day=JSON.parse(JSON.stringify(getDay(ds)));
+  if(day.tasks?.[i]) day.tasks[i].done=!day.tasks[i].done;
+  cache[ds]=day; renderAll();
+  await writeDay(ds, day);
 };
 
-window._deleteTask = async i => {
-  const date = todayStr();
-  const day  = JSON.parse(JSON.stringify(getDay(date)));
+window._deleteTask = async (ds, i) => {
+  const day=JSON.parse(JSON.stringify(getDay(ds)));
   if(Array.isArray(day.tasks)) day.tasks.splice(i,1);
-  cache[date] = day;
-  renderAll();
-  await writeDay(date, day);
+  cache[ds]=day; renderAll();
+  await writeDay(ds, day);
+};
+
+window._saveJournal = async (ds, key, value) => {
+  const day=JSON.parse(JSON.stringify(getDay(ds)));
+  if(!day.journal) day.journal={};
+  day.journal[key]=value;
+  cache[ds]=day;
+  await writeDay(ds, day);
+  toast('Saved');
+};
+
+window._saveJournalDirect = async (ds, key, value) => {
+  const day=JSON.parse(JSON.stringify(getDay(ds)));
+  if(!day.journal) day.journal={};
+  day.journal[key]=day.journal[key]===value?null:value;
+  cache[ds]=day; renderJournal();
+  await writeDay(ds, day);
+  toast('Saved');
+};
+
+// ── DATE NAV ──────────────────────────────────────────────────────────────────
+window.changeDate = dir => {
+  const next=new Date(viewDate); next.setDate(next.getDate()+dir);
+  if(fmt(next)>todayStr()) return;
+  viewDate=next;
+  renderCurrentView();
+  document.getElementById('scrollArea').scrollTop=0;
 };
 
 // ── WEEK ──────────────────────────────────────────────────────────────────────
 function renderWeek() {
-  const now = new Date();
-  const dow = now.getDay()===0?6:now.getDay()-1;
-  const mon = new Date(now); mon.setDate(now.getDate()-dow);
-  const DAY = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const now=new Date(), dow=now.getDay()===0?6:now.getDay()-1;
+  const mon=new Date(now); mon.setDate(now.getDate()-dow);
+  const DAY=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
   let bars='', totalScore=0, days=0, hCounts={};
-  ALL_HABITS.forEach(h=>hCounts[h.id]=0);
+  ALL_HABITS_FOR_STATS.forEach(h=>hCounts[h.id]=0);
 
   for(let i=0;i<7;i++){
     const d=new Date(mon); d.setDate(mon.getDate()+i);
     if(d>now) break;
     days++;
-    const ds=d.toISOString().slice(0,10);
-    const s=calcScore(ds); totalScore+=s.pct;
+    const ds=fmt(d); const s=calcScore(ds); totalScore+=s.pct;
     const day=getDay(ds);
-    ALL_HABITS.forEach(h=>{ if(day.habits?.[h.id]) hCounts[h.id]++; });
+    ALL_HABITS_FOR_STATS.forEach(h=>{ if(day.habits?.[h.id]) hCounts[h.id]++; });
     bars+=`<div class="rt-row">
       <div class="rt-day">${DAY[i]}${ds===todayStr()?' ·':''}</div>
       <div class="rt-bar-track"><div class="rt-bar-fill" style="width:${s.pct}%;background:${barColor(s.pct)}"></div></div>
       <div class="rt-pct">${s.pct}%</div>
     </div>`;
   }
-
   const avg=days?Math.round(totalScore/days):0, g=grade(avg);
   document.getElementById('weekStats').innerHTML=`
-    <div class="stat-box"><div class="stat-val">${avg}%</div><div class="stat-lbl">Avg Score</div></div>
+    <div class="stat-box"><div class="stat-val" style="color:${barColor(avg)}">${avg}%</div><div class="stat-lbl">Avg Score</div></div>
     <div class="stat-box"><div class="stat-val">${days}</div><div class="stat-lbl">Days</div></div>
-    <div class="stat-box"><div class="stat-val" style="color:${barColor(avg)}">${g.label.split(' ')[0]}</div><div class="stat-lbl">Grade</div></div>
+    <div class="stat-box"><div class="stat-val" style="color:${g.color};font-size:.9rem">${g.label.split(' ')[0]}</div><div class="stat-lbl">Grade</div></div>
   `;
   document.getElementById('weekBars').innerHTML=bars;
   renderCon('weekCon', hCounts, days);
 }
 
 function renderCon(id, counts, days) {
-  let html='<div class="con-title">Habit Consistency</div>';
-  ALL_HABITS.forEach(h=>{
+  let html='<div class="con-title">HABIT CONSISTENCY</div>';
+  ALL_HABITS_FOR_STATS.forEach(h=>{
     const pct=days?Math.round(counts[h.id]/days*100):0;
-    html+=`<div class="con-row">
-      <span class="con-icon">${h.icon}</span>
-      <span class="con-name">${h.name}</span>
-      <div class="con-track"><div class="con-fill" style="width:${pct}%;background:${barColor(pct)}"></div></div>
-      <span class="con-pct">${pct}%</span>
-    </div>`;
+    html+=`<div class="con-row"><span class="con-icon">${h.icon}</span><span class="con-name">${h.name}</span><div class="con-track"><div class="con-fill" style="width:${pct}%;background:${barColor(pct)}"></div></div><span class="con-pct">${pct}%</span></div>`;
   });
   document.getElementById(id).innerHTML=html;
 }
 
 // ── MONTH ─────────────────────────────────────────────────────────────────────
-window.changeMonth = dir => { viewMonth.setMonth(viewMonth.getMonth()+dir); renderMonth(); };
+window.changeViewMonth = dir => { viewMonth.setMonth(viewMonth.getMonth()+dir); renderMonth(); };
 
 function renderMonth() {
   const yr=viewMonth.getFullYear(), mo=viewMonth.getMonth();
   const now=new Date(), dim=new Date(yr,mo+1,0).getDate();
   const first=new Date(yr,mo,1).getDay(), off=first===0?6:first-1;
-  document.getElementById('mnTitle').textContent =
-    viewMonth.toLocaleDateString('en-IN',{month:'long',year:'numeric'});
+  document.getElementById('mnTitle').textContent=
+    viewMonth.toLocaleDateString('en-IN',{month:'long',year:'numeric'}).toUpperCase();
 
   let total=0, daysT=0, hCounts={};
-  ALL_HABITS.forEach(h=>hCounts[h.id]=0);
+  ALL_HABITS_FOR_STATS.forEach(h=>hCounts[h.id]=0);
   const DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
   document.getElementById('calHdr').innerHTML=DAYS.map(d=>`<div class="cal-dh">${d}</div>`).join('');
 
   let cells='';
   for(let i=0;i<off;i++) cells+='<div class="cal-cell empty"></div>';
   for(let d=1;d<=dim;d++){
-    const date=new Date(yr,mo,d), ds=date.toISOString().slice(0,10);
-    const isToday=ds===todayStr(), isFuture=date>now;
+    const date=new Date(yr,mo,d), ds=fmt(date);
+    const isT=ds===todayStr(), isF=date>now;
     const s=calcScore(ds), day=getDay(ds);
     const hasData=Object.keys(day.habits||{}).length>0||(day.tasks||[]).length>0;
-    if(!isFuture&&hasData){ daysT++; total+=s.pct; ALL_HABITS.forEach(h=>{ if(day.habits?.[h.id]) hCounts[h.id]++; }); }
-    cells+=`<div class="cal-cell ${isToday?'today-cell':hasData&&!isFuture?'has-data':''} ${isFuture?'future':''}">
-      ${d}${hasData&&!isFuture?`<div class="cal-dot" style="background:${barColor(s.pct)}"></div>`:''}
+    if(!isF&&hasData){ daysT++; total+=s.pct; ALL_HABITS_FOR_STATS.forEach(h=>{ if(day.habits?.[h.id]) hCounts[h.id]++; }); }
+    cells+=`<div class="cal-cell ${isT?'today-cell':hasData&&!isF?'has-data':''} ${isF?'future':''}">
+      ${d}${hasData&&!isF?`<div class="cal-dot" style="background:${barColor(s.pct)}"></div>`:''}
     </div>`;
   }
   document.getElementById('calCells').innerHTML=cells;
 
   const avg=daysT?Math.round(total/daysT):0, g=grade(avg);
   document.getElementById('monthStats').innerHTML=`
-    <div class="stat-box"><div class="stat-val">${avg}%</div><div class="stat-lbl">Avg</div></div>
+    <div class="stat-box"><div class="stat-val" style="color:${barColor(avg)}">${avg}%</div><div class="stat-lbl">Avg Score</div></div>
     <div class="stat-box"><div class="stat-val">${daysT}</div><div class="stat-lbl">Days</div></div>
-    <div class="stat-box"><div class="stat-val" style="color:${barColor(avg)}">${g.label.split(' ')[0]}</div><div class="stat-lbl">Grade</div></div>
+    <div class="stat-box"><div class="stat-val" style="color:${g.color};font-size:.9rem">${g.label.split(' ')[0]}</div><div class="stat-lbl">Grade</div></div>
   `;
+
+  // Monthly habit count table
+  const mdp = getMonthDaysPassed(yr, mo);
+  let tableHtml=`
+    <div class="mt-header">
+      <div class="mt-col">Habit</div>
+      <div class="mt-col" style="text-align:center">Days</div>
+      <div class="mt-col">Progress</div>
+    </div>
+  `;
+  ALL_HABITS_FOR_STATS.forEach(h=>{
+    const cnt=getMonthlyCount(h.id,false,yr,mo);
+    const pct=mdp?Math.round(cnt/mdp*100):0;
+    tableHtml+=`<div class="mt-row">
+      <div class="mt-name">${h.icon} ${h.name}</div>
+      <div class="mt-count" style="color:${barColor(pct)}">${cnt}<span style="color:var(--muted);font-family:'Instrument Sans';font-size:.6rem">/${mdp}</span></div>
+      <div class="mt-bar-wrap"><div class="mt-bar-track"><div class="mt-bar-fill" style="width:${pct}%;background:${barColor(pct)}"></div></div><span class="mt-pct">${pct}%</span></div>
+    </div>`;
+  });
+  document.getElementById('monthlyTable').innerHTML=tableHtml;
   renderCon('monthCon', hCounts, daysT);
 }
 
@@ -719,32 +1078,28 @@ function getStreak(habitId) {
 function renderStreaks() {
   const grid=document.getElementById('streaksGrid');
   grid.innerHTML='';
-  ALL_HABITS.forEach(h=>{
+  ALL_HABITS_FOR_STATS.forEach(h=>{
     const s=getStreak(h.id), fire='🔥'.repeat(Math.min(s.current,5));
     const card=document.createElement('div');
     card.className='streak-card';
-    card.innerHTML=`
-      <div class="sc-icon">${h.icon}</div>
-      <div class="sc-val">${s.current}</div>
-      <div class="sc-name">${h.name}</div>
-      <div class="sc-fire">${fire||'—'}</div>
-      <div class="sc-best">Best: ${s.longest} days</div>
-    `;
+    card.innerHTML=`<div class="sc-icon">${h.icon}</div><div class="sc-val">${s.current}</div><div class="sc-name">${h.name}</div><div class="sc-fire">${fire||'—'}</div><div class="sc-best">Best: ${s.longest} days</div>`;
     grid.appendChild(card);
   });
 }
 
 // ── TABS ──────────────────────────────────────────────────────────────────────
 window.switchTab = (tab, btn) => {
-  currentTab = tab;
+  currentTab=tab;
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('tab-'+tab).classList.add('active');
   btn.classList.add('active');
   document.getElementById('scrollArea').scrollTop=0;
-  if(tab==='week')    renderWeek();
-  if(tab==='month')   renderMonth();
-  if(tab==='streaks') renderStreaks();
+  if(tab==='planets')  { renderPlanetHabits(); renderPlanetStates(); }
+  if(tab==='journal')  renderJournal();
+  if(tab==='week')     renderWeek();
+  if(tab==='month')    renderMonth();
+  if(tab==='streaks')  renderStreaks();
 };
 
 // ── EXPORT ────────────────────────────────────────────────────────────────────
@@ -758,47 +1113,48 @@ function download(content, filename, type) {
 }
 
 window.exportJSON = () => {
-  download(JSON.stringify(cache,null,2), `vijay_habits_${todayStr()}.json`, 'application/json');
+  download(JSON.stringify(cache,null,2),`vijay_os_${todayStr()}.json`,'application/json');
   toast('JSON exported ✓'); window.closeExport();
 };
 
 window.exportCSV = () => {
-  const rows=[['Date','Health_pts','Wellness_pts','Task_pts','Total_pct',...ALL_HABITS.map(h=>h.id),'tasks_done','tasks_total']];
+  const rows=[['Date','Health_pts','Wellness_pts','Task_pts','Total_pct',...ALL_HABITS_FOR_STATS.map(h=>h.id),'tasks_done','tasks_total','lead_planet','hijacker']];
   Object.keys(cache).sort().forEach(ds=>{
     const s=calcScore(ds), day=getDay(ds);
-    rows.push([ds,s.hp,s.wp,s.tp,s.pct,...ALL_HABITS.map(h=>day.habits?.[h.id]?1:0),s.done,s.total_tasks]);
+    rows.push([ds,s.hp,s.wp,s.tp,s.pct,...ALL_HABITS_FOR_STATS.map(h=>day.habits?.[h.id]?1:0),s.done,s.total_tasks,day.journal?.leadPlanet||'',day.journal?.hijacker||'']);
   });
-  download(rows.map(r=>r.join(',')).join('\n'), `vijay_habits_${todayStr()}.csv`, 'text/csv');
+  download(rows.map(r=>r.join(',')).join('\n'),`vijay_os_${todayStr()}.csv`,'text/csv');
   toast('CSV exported ✓'); window.closeExport();
 };
 
 window.exportReport = () => {
-  let report=`VIJAY — HABIT REPORT\nGenerated: ${new Date().toLocaleString()}\n\n`;
+  let r=`VIJAY OS — FULL REPORT\nGenerated: ${new Date().toLocaleString()}\n\n`;
   Object.keys(cache).sort().forEach(ds=>{
-    const s=calcScore(ds), day=getDay(ds), g=grade(s.pct);
-    report+=`${ds}  |  ${s.pct}%  |  ${g.label}\n`;
-    ALL_HABITS.forEach(h=>{ report+=`  ${day.habits?.[h.id]?'✓':'✗'} ${h.name}\n`; });
-    const tasks=(day.tasks||[]).filter(t=>t);
-    if(tasks.length){ report+=`  Tasks: ${tasks.filter(t=>t.done).length}/${tasks.length}\n`; tasks.forEach(t=>{ report+=`    ${t.done?'✓':'✗'} [${t.cat}] ${t.text}\n`; }); }
-    report+='\n';
+    const s=calcScore(ds), day=getDay(ds), g=grade(s.pct), j=day.journal||{};
+    r+=`${ds}  |  ${s.pct}%  |  ${g.label}\n`;
+    ALL_HABITS_FOR_STATS.forEach(h=>{ r+=`  ${day.habits?.[h.id]?'✓':'✗'} ${h.name}\n`; });
+    const tasks=(day.tasks||[]).filter(Boolean);
+    if(tasks.length){ r+=`  Tasks: ${tasks.filter(t=>t.done).length}/${tasks.length}\n`; tasks.forEach(t=>{ r+=`    ${t.done?'✓':'✗'} [${t.cat}] ${t.text}\n`; }); }
+    if(j.priority) r+=`  Priority: ${j.priority}\n`;
+    if(j.leadPlanet) r+=`  Lead planet: ${j.leadPlanet}\n`;
+    if(j.hijacker) r+=`  Hijacker: ${j.hijacker}\n`;
+    r+='\n';
   });
-  download(report, `vijay_report_${todayStr()}.txt`, 'text/plain');
+  download(r,`vijay_report_${todayStr()}.txt`,'text/plain');
   toast('Report exported ✓'); window.closeExport();
 };
 
 // ── TOAST ─────────────────────────────────────────────────────────────────────
 let tt;
-window.toast = msg => {
+function toast(msg, err=false) {
   const el=document.getElementById('toast');
-  el.textContent=msg; el.classList.add('show');
+  el.textContent=msg;
+  el.className='toast show'+(err?' err':'');
   clearTimeout(tt); tt=setTimeout(()=>el.classList.remove('show'),2000);
-};
-function toast(msg){ window.toast(msg); }
+}
+window.toast=toast;
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
-document.getElementById('topDate').textContent =
-  new Date().toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'}).toUpperCase();
-
 initSync();
 </script>
 </body>
