@@ -190,9 +190,9 @@ textarea:focus,input:focus{border-color:var(--green)}
   <section class="screen" id="scr-week">
     <div class="eyebrow serif">Week</div>
     <h1 class="serif" id="weektitle">This week</h1>
-    <div class="sub">Target ≥ 18 / 21 · MVD days count full</div>
+    <div class="sub">Target ≥ 36 / 42 · MVD days count full</div>
     <div class="card">
-      <div class="bigpct serif" style="font-size:40px;margin-top:0"><span id="weekscore">0</span><small>/21</small></div>
+      <div class="bigpct serif" style="font-size:40px;margin-top:0"><span id="weekscore">0</span><small>/42</small></div>
       <div class="weekbar" id="weekbar"></div>
     </div>
     <div class="grid2">
@@ -248,16 +248,17 @@ const START = new Date(2026,6,18);           // Jul 18 2026 (local)
 const END   = new Date(2026,11,15);          // Dec 15 2026
 const TOTAL = 151;
 const CORE = [
-  {id:'p', em:'🍛', label:'Diet — protein floor hit'},
-  {id:'m', em:'💪', label:'Moved — gym or 10-min mobility'},
-  {id:'a', em:'⚡', label:'1 uncomfortable action'}
+  {id:'p',   em:'🍛', label:'Diet — protein floor hit'},
+  {id:'m',   em:'💪', label:'Moved — gym or 10-min mobility'},
+  {id:'a',   em:'⚡', label:'1 uncomfortable action'},
+  {id:'med', em:'🧘', label:'Meditation'},
+  {id:'nf',  em:'🚫', label:'No-fap'},
+  {id:'ph',  em:'📵', label:'Phone ≤ 1 hr'}
 ];
+const CORE_MAX = CORE.length; // 6 — scored, decides the day
 const TALLY = [
-  {id:'med', label:'Meditation'},
   {id:'jou', label:'Journal'},
-  {id:'nf',  label:'No-fap'},
-  {id:'po',  label:'Posture 5-min'},
-  {id:'ph',  label:'Phone ≤ 1 hr'}
+  {id:'po',  label:'Posture 5-min'}
 ];
 const KEY='vijayos2_state';
 const QUOTES=[
@@ -326,13 +327,20 @@ function dayNum(d){return Math.round((d0(d)-START)/MS)+1;}
 function inRange(d){return d0(d)>=START && d0(d)<=END;}
 function monKey(d){const x=d0(d);const dow=(x.getDay()+6)%7;return dkey(addD(x,-dow));} // Monday of week
 function rec(d){return S.days[dkey(d)]||null;}
-function blank(){return {p:0,m:0,a:0,mvd:0,t:{med:0,jou:0,nf:0,po:0,ph:0}};}
+function blank(){return {p:0,m:0,a:0,med:0,nf:0,ph:0,mvd:0,t:{jou:0,po:0}};}
 
 /* ---------- scoring ---------- */
+// normal day: sum of 6 Core fields, max 6
+// MVD day: only Diet + Posture achievable, scaled to the same max-6 scale
+//          both hit = 6 (full day), one hit = 3, none = 0
 function dayScore(d){
   const r=rec(d); if(!r) return 0;
-  if(r.mvd) return (r.p&&r.t.po)?3:(r.p+r.t.po);
-  return r.p+r.m+r.a;
+  if(r.mvd){
+    // MVD checks: Move (warmup) + Action — diet dropped, eating out isn't controllable while traveling
+    const hits=(r.m?1:0)+(r.a?1:0);
+    return hits*(CORE_MAX/2);
+  }
+  return CORE.reduce((s,c)=>s+(r[c.id]?1:0),0);
 }
 function elapsedDays(){
   const t=today();
@@ -343,7 +351,7 @@ function overallPct(){
   const n=elapsedDays(); if(n===0) return 0;
   let earned=0;
   for(let i=0;i<n;i++) earned+=dayScore(addD(START,i));
-  return Math.round(earned/(n*3)*100);
+  return Math.round(earned/(n*CORE_MAX)*100);
 }
 function mvdCountMonth(d){
   let c=0; const m=d.getMonth(), y=d.getFullYear();
@@ -444,8 +452,8 @@ function render(){
   const canEdit=editable();
   let core='';
   if(r.mvd){
-    core+=coreBtn('p','🍛','Diet — protein floor hit',r.p,canEdit);
-    core+=coreBtn('t.po','🧘','Posture / stretch 5-min',r.t.po,canEdit);
+    core+=coreBtn('m','💪','Moved — warmup / stretch',r.m,canEdit);
+    core+=coreBtn('a','⚡','1 uncomfortable action',r.a,canEdit);
   }else{
     for(const c of CORE) core+=coreBtn(c.id,c.em,c.label,r[c.id],canEdit);
   }
@@ -456,13 +464,13 @@ function render(){
   sw.classList.toggle('on',!!r.mvd);
   const used=mvdCountMonth(t);
   sw.disabled=!canEdit||(!r.mvd&&used>=8);
-  document.getElementById('mvdinfo').textContent=(!r.mvd&&used>=8)?'Monthly cap reached (8/8). Full day required.':'Protein + posture only. Counts as a full day. Used '+used+'/8 this month.';
+  document.getElementById('mvdinfo').textContent=(!r.mvd&&used>=8)?'Monthly cap reached (8/8). Full day required.':'Move + action only. Diet doesn\u2019t score today \u2014 log it below if you can, no pressure. Used '+used+'/8 this month.';
 
   // tally chips
   let tc='';
+  if(r.mvd) tc+='<button class="chip'+(r.p?' on':'')+'" data-tally="p"'+(canEdit?'':' disabled')+'>Diet (bonus)'+(r.p?' \u00b7':'')+'</button>';
   for(const x of TALLY){
-    if(r.mvd&&x.id==='po') continue;
-    tc+='<button class="chip'+(r.t[x.id]?' on':'')+'" data-tally="'+x.id+'"'+(canEdit?'':' disabled')+'>'+x.label+(r.t[x.id]?' ·':'')+'</button>';
+    tc+='<button class="chip'+(r.t[x.id]?' on':'')+'" data-tally="'+x.id+'"'+(canEdit?'':' disabled')+'>'+x.label+(r.t[x.id]?' \u00b7':'')+'</button>';
   }
   document.getElementById('tallywrap').innerHTML=tc;
 
@@ -480,6 +488,8 @@ function coreBtn(id,em,label,done,canEdit){
 }
 
 /* ---------- week screen ---------- */
+const WEEK_MAX = 7*CORE_MAX;              // 42
+const WEEK_TARGET = Math.round(WEEK_MAX*18/21); // 36 — same ~86% bar as before
 function weekScore(mon){
   let s=0; const t=today();
   for(let i=0;i<7;i++){const d=addD(mon,i); if(inRange(d)&&d<=t) s+=dayScore(d);}
@@ -497,8 +507,11 @@ function renderWeek(){
     if(inRange(d)&&d<=t){
       const r=S.days[k];
       const sc=dayScore(d);
-      if(r&&r.mvd&&sc===3){cls='mv';txt='M';}
-      else{cls='s'+sc; if(sc===0)cls=''; txt=sc;}
+      if(r&&r.mvd){cls='mv';txt='M';}
+      else if(sc===CORE_MAX){cls='s3';txt=sc;}
+      else if(sc>=Math.ceil(CORE_MAX*2/3)){cls='s2';txt=sc;}
+      else if(sc>=1){cls='s1';txt=sc;}
+      else{cls='';txt=0;}
     }
     wb+='<div class="wd"><div class="dot '+cls+'">'+txt+'</div><div class="lb">'+names[i]+'</div></div>';
   }
@@ -515,7 +528,7 @@ function renderWeek(){
     if(!isCurrent){
       const s=weekScore(m);
       const lbl=addD(m,0).toLocaleDateString('en-IN',{day:'numeric',month:'short'})+' – '+addD(m,6).toLocaleDateString('en-IN',{day:'numeric',month:'short'});
-      rows.push('<div class="row"><span>'+lbl+'</span><span class="r'+(s<18?' y':'')+'">'+s+'/21'+(s<18?' ⚠':'')+'</span></div>');
+      rows.push('<div class="row"><span>'+lbl+'</span><span class="r'+(s<WEEK_TARGET?' y':'')+'">'+s+'/'+WEEK_MAX+(s<WEEK_TARGET?' ⚠':'')+'</span></div>');
     }
     m=addD(m,7);
   }
@@ -527,25 +540,27 @@ function renderMonth(){
   const t=today();
   document.getElementById('monthtitle').textContent=t.toLocaleDateString('en-IN',{month:'long',year:'numeric'});
   const y=t.getFullYear(), mo=t.getMonth();
-  const counts={med:0,jou:0,nf:0,po:0,ph:0,workout:0,protein:0,green:0};
+  const counts={med:0,jou:0,nf:0,po:0,ph:0,workout:0,protein:0,action:0,green:0};
   let daysInMonthElapsed=0;
   for(const k in S.days){
     const p=k.split('-');
     if(+p[0]===y&&+p[1]===mo+1){
       const r=S.days[k]; const d=new Date(+p[0],+p[1]-1,+p[2]);
       if(!inRange(d)||d>t) continue;
-      for(const id of ['med','jou','nf','po','ph']) if(r.t[id]) counts[id]++;
+      for(const id of ['jou','po']) if(r.t[id]) counts[id]++;
+      for(const id of ['med','nf','ph']) if(r[id]) counts[id]++;
       if(r.m) counts.workout++;
       if(r.p) counts.protein++;
-      if(dayScore(d)===3) counts.green++;
+      if(r.a) counts.action++;
+      if(dayScore(d)===CORE_MAX) counts.green++;
     }
   }
   const first=new Date(y,mo,1), lo=first<START?START:first;
   if(t>=START) daysInMonthElapsed=Math.round((d0(t)-d0(lo))/MS)+1;
   if(daysInMonthElapsed<0) daysInMonthElapsed=0;
   const rows=[
-    ['Full days (3/3)',counts.green],['Workout / mobility',counts.workout],['Diet (protein floor)',counts.protein],
-    ['Meditation',counts.med],['Journal',counts.jou],['No-fap',counts.nf],['Posture',counts.po],['Phone ≤ 1 hr',counts.ph]
+    ['Full days (6/6)',counts.green],['Diet (protein floor)',counts.protein],['Workout / mobility',counts.workout],['Uncomfortable action',counts.action],
+    ['Meditation',counts.med],['No-fap',counts.nf],['Phone ≤ 1 hr',counts.ph],['Journal',counts.jou],['Posture',counts.po]
   ].map(x=>'<div class="row"><span>'+x[0]+'</span><span class="r">'+x[1]+'/'+daysInMonthElapsed+'</span></div>').join('');
   document.getElementById('monthtally').innerHTML=daysInMonthElapsed?rows:'<div class="hint">Nothing yet — starts Jul 18.</div>';
   document.getElementById('mpct').textContent=overallPct()+'%';
@@ -555,12 +570,13 @@ function renderMonth(){
   const R={med:0,jou:0,nf:0,po:0,ph:0,workout:0,diet:0,action:0,green:0};
   for(let i=0;i<n;i++){
     const dd=addD(START,i); const rr=rec(dd); if(!rr) continue;
-    for(const id of ['med','jou','nf','po','ph']) if(rr.t[id]) R[id]++;
+    for(const id of ['jou','po']) if(rr.t[id]) R[id]++;
+    for(const id of ['med','nf','ph']) if(rr[id]) R[id]++;
     if(rr.m) R.workout++; if(rr.p) R.diet++; if(rr.a) R.action++;
-    if(dayScore(dd)===3) R.green++;
+    if(dayScore(dd)===CORE_MAX) R.green++;
   }
   const runRows=[
-    ['Full days (3/3)',R.green],['Diet (protein floor)',R.diet],['Workout / mobility',R.workout],['Uncomfortable action',R.action],
+    ['Full days (6/6)',R.green],['Diet (protein floor)',R.diet],['Workout / mobility',R.workout],['Uncomfortable action',R.action],
     ['Meditation',R.med],['Journal',R.jou],['No-fap',R.nf],['Posture',R.po],['Phone ≤ 1 hr',R.ph]
   ].map(x=>'<div class="row"><span>'+x[0]+'</span><span class="r">'+x[1]+'/'+n+'</span></div>').join('');
   document.getElementById('runtally').innerHTML=n?runRows:'<div class="hint">Starts Jul 18. Every habit gets a lifetime count here — X out of days elapsed, all 151 days.</div>';
@@ -609,12 +625,14 @@ function bindDynamic(){
   document.querySelectorAll('[data-core]').forEach(b=>{
     b.onclick=async()=>{
       const r=todayRec(); const id=b.dataset.core;
-      if(id==='t.po') r.t.po=r.t.po?0:1; else r[id]=r[id]?0:1;
+      r[id]=r[id]?0:1;
       await saveAll();
     };
   });
   document.querySelectorAll('[data-tally]').forEach(b=>{
-    b.onclick=async()=>{const r=todayRec(); const id=b.dataset.tally; r.t[id]=r.t[id]?0:1; await saveAll();};
+    b.onclick=async()=>{const r=todayRec(); const id=b.dataset.tally;
+      if(id==='p') r.p=r.p?0:1; else r.t[id]=r.t[id]?0:1;
+      await saveAll();};
   });
 }
 document.getElementById('mvdsw').onclick=async()=>{
